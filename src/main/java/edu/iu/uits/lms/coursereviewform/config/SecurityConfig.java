@@ -45,44 +45,44 @@ public class SecurityConfig {
     }
 
 
-    @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4)
-    public static class RestSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-
-        @Override
-        public void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers("/rest/**")
-                  .and()
-                  .authorizeRequests()
-                  .antMatchers("/rest/**")
-                  .access("hasAuthority('SCOPE_lms:rest') and hasAuthority('ROLE_LMS_REST_ADMINS')")
-                  .and()
-                  .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                  .and()
-                  .oauth2ResourceServer()
-                  .jwt().jwtAuthenticationConverter(new CustomJwtAuthenticationConverter());
-
-            //Need to disable csrf so that we can use POST via REST
-            http.csrf().disable();
-        }
-    }
-
 //    @Configuration
-//    @Order(SecurityProperties.BASIC_AUTH_ORDER - 3)
-//    public static class OpenEndpointConfig extends WebSecurityConfigurerAdapter {
+//    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4)
+//    public static class RestSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 //
 //        @Override
 //        public void configure(HttpSecurity http) throws Exception {
-//            http.requestMatchers().antMatchers("/rest/submit/fromqualtrics")
-//                    .and()
-//                    .authorizeRequests()
-//                    .antMatchers("/rest/submit/fromqualtrics")
-//                    .permitAll();
+//            http.requestMatchers().antMatchers("/rest/**")
+//                  .and()
+//                  .authorizeRequests()
+//                  .antMatchers("/rest/**")
+//                  .access("hasAuthority('SCOPE_lms:rest') and hasAuthority('ROLE_LMS_REST_ADMINS')")
+//                  .and()
+//                  .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                  .and()
+//                  .oauth2ResourceServer()
+//                  .jwt().jwtAuthenticationConverter(new CustomJwtAuthenticationConverter());
 //
 //            //Need to disable csrf so that we can use POST via REST
 //            http.csrf().disable();
 //        }
 //    }
+
+    @Configuration
+    @Order(SecurityProperties.BASIC_AUTH_ORDER - 3)
+    public static class OpenEndpointConfig extends WebSecurityConfigurerAdapter {
+
+        @Override
+        public void configure(HttpSecurity http) throws Exception {
+            http.requestMatchers().antMatchers("/rest/submit/**")
+                    .and()
+                    .authorizeRequests()
+                    .antMatchers("/rest/submit/**")
+                    .permitAll();
+
+            //Need to disable csrf so that we can use POST via REST
+            http.csrf().disable();
+        }
+    }
 
     @Configuration
     @Order(SecurityProperties.BASIC_AUTH_ORDER - 2)
