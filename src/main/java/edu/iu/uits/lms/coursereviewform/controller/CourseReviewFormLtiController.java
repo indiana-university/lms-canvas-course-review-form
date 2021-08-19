@@ -28,10 +28,14 @@ public class CourseReviewFormLtiController extends LtiController {
 
     private boolean openLaunchUrlInNewWindow = false;
 
+    public static final String CUSTOM_DOCUMENT_ID = "custom_document_id";
+
     @Override
     protected String getLaunchUrl(Map<String, String> launchParams) {
         String courseId = launchParams.get(CUSTOM_CANVAS_COURSE_ID);
-        return "/app/index/" + courseId;
+        String documentId = launchParams.get(CUSTOM_DOCUMENT_ID);
+
+        return "/app/index/" + courseId + "/" + documentId;
     }
 
     @Override
@@ -44,6 +48,8 @@ public class CourseReviewFormLtiController extends LtiController {
         paramMap.put(BasicLTIConstants.CONTEXT_TITLE, payload.get(BasicLTIConstants.CONTEXT_TITLE));
         paramMap.put(BasicLTIConstants.LIS_PERSON_CONTACT_EMAIL_PRIMARY, payload.get(BasicLTIConstants.LIS_PERSON_CONTACT_EMAIL_PRIMARY));
         paramMap.put(BasicLTIConstants.LIS_PERSON_SOURCEDID, payload.get(BasicLTIConstants.LIS_PERSON_SOURCEDID));
+
+        paramMap.put(CUSTOM_DOCUMENT_ID, payload.get(CUSTOM_DOCUMENT_ID));
 
         openLaunchUrlInNewWindow = Boolean.valueOf(payload.get(CUSTOM_OPEN_IN_NEW_WINDOW));
 
@@ -85,34 +91,5 @@ public class CourseReviewFormLtiController extends LtiController {
             return LAUNCH_MODE.WINDOW;
 
         return LAUNCH_MODE.FORWARD;
-    }
-
-    /**
-     * Given a list of user roles, return the internal equivalent role
-     * @param userRoles
-     * @param instructorRoles
-     * @return
-     */
-    @Override
-    protected String returnEquivalentAuthority(List<String> userRoles, List<String> instructorRoles) {
-        for (String instructorRole : instructorRoles) {
-            if (userRoles.contains(instructorRole)) {
-                return LTIConstants.INSTRUCTOR_AUTHORITY;
-            }
-        }
-
-        if (userRoles.contains(CanvasConstants.TA_ROLE)) {
-            return LTIConstants.TA_AUTHORITY;
-        }
-
-        if (userRoles.contains(CanvasConstants.DESIGNER_ROLE)) {
-            return LTIConstants.DESIGNER_AUTHORITY;
-        }
-
-        if (userRoles.contains(CanvasConstants.OBSERVER_ROLE)) {
-            return LTIConstants.OBSERVER_AUTHORITY;
-        }
-
-        return LTIConstants.STUDENT_AUTHORITY;
     }
 }

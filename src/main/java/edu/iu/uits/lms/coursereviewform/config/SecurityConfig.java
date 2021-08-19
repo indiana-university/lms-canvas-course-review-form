@@ -14,7 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 public class SecurityConfig {
 
     @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4)
+    @Order(SecurityProperties.BASIC_AUTH_ORDER - 5)
     public static class AppWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
         @Override
@@ -46,7 +46,7 @@ public class SecurityConfig {
 
 
     @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 3)
+    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4)
     public static class RestSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
         @Override
@@ -61,8 +61,28 @@ public class SecurityConfig {
                   .and()
                   .oauth2ResourceServer()
                   .jwt().jwtAuthenticationConverter(new CustomJwtAuthenticationConverter());
+
+            //Need to disable csrf so that we can use POST via REST
+            http.csrf().disable();
         }
     }
+
+//    @Configuration
+//    @Order(SecurityProperties.BASIC_AUTH_ORDER - 3)
+//    public static class OpenEndpointConfig extends WebSecurityConfigurerAdapter {
+//
+//        @Override
+//        public void configure(HttpSecurity http) throws Exception {
+//            http.requestMatchers().antMatchers("/rest/submit/fromqualtrics")
+//                    .and()
+//                    .authorizeRequests()
+//                    .antMatchers("/rest/submit/fromqualtrics")
+//                    .permitAll();
+//
+//            //Need to disable csrf so that we can use POST via REST
+//            http.csrf().disable();
+//        }
+//    }
 
     @Configuration
     @Order(SecurityProperties.BASIC_AUTH_ORDER - 2)
