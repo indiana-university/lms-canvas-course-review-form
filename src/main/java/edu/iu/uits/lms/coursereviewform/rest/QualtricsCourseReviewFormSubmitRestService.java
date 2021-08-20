@@ -59,6 +59,7 @@ public class QualtricsCourseReviewFormSubmitRestService {
             log.info("Document found as = {}", qualtricsDocument);
         }
 
+        log.info("Looking up course...");
 //        final String courseId = qualtricsRestSubmission.getCourseId();
         final String courseId = "1454121";
         Course course = null;
@@ -67,6 +68,7 @@ public class QualtricsCourseReviewFormSubmitRestService {
             course = coursesApi.getCourse(courseId);
         }
 
+        log.info("Preparing submission");
         QualtricsSubmission qualtricsSubmission = new QualtricsSubmission();
         qualtricsSubmission.setQualtricsDocument(qualtricsDocument);
         qualtricsSubmission.setCourseId(courseId);
