@@ -79,6 +79,8 @@ public class QualtricsCourseReviewFormSubmitRestService {
         qualtricsSubmission.setResponseId(qualtricsRestSubmission.getResponseId());
 
         qualtricsSubmissionRepository.save(qualtricsSubmission);
+
+        log.info("Saved submission");
     }
 
     @GetMapping("/gimmie")
