@@ -55,22 +55,19 @@ public class QualtricsCourseReviewFormSubmitRestService {
         QualtricsDocument qualtricsDocument = qualtricsDocumentRepository.getByToken(tokenHeader);
 
         if (qualtricsDocument == null) {
-            log.info("Could not find document by token");
+            log.error("Could not find document by token = {}", tokenHeader);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information - token");
         } else {
             log.info("Document found as = {}", qualtricsDocument);
         }
 
-        log.info("Looking up course...");
-//        final String courseId = qualtricsRestSubmission.getCourseId();
-        final String courseId = "1454121";
+        final String courseId = qualtricsRestSubmission.getCourseId();
         Course course = null;
 
-        if (courseId != null) {
+        if (courseId != null && ! courseId.isEmpty()) {
             course = coursesApi.getCourse(courseId);
         }
 
-        log.info("Preparing submission");
         QualtricsSubmission qualtricsSubmission = new QualtricsSubmission();
         qualtricsSubmission.setQualtricsDocument(qualtricsDocument);
         qualtricsSubmission.setCourseId(courseId);
@@ -87,7 +84,7 @@ public class QualtricsCourseReviewFormSubmitRestService {
         qualtricsDocument.setOpen(false);
 
         qualtricsDocumentRepository.save(qualtricsDocument);
-        
+
         log.info("Saved submission");
     }
 
