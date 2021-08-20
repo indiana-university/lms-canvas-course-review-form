@@ -84,6 +84,10 @@ public class QualtricsCourseReviewFormSubmitRestService {
 
         qualtricsSubmissionRepository.save(qualtricsSubmission);
 
+        qualtricsDocument.setOpen(false);
+
+        qualtricsDocumentRepository.save(qualtricsDocument);
+        
         log.info("Saved submission");
     }
 
