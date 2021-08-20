@@ -32,25 +32,21 @@ public class QualtricsCourseReviewFormSubmitRestService {
     QualtricsDocumentRepository qualtricsDocumentRepository;
 
     @Autowired
-    private QualtricsLaunchRepository qualtricsLaunchRepository;
-
-    @Autowired
     private QualtricsSubmissionRepository qualtricsSubmissionRepository;
 
     @Autowired
     private CoursesApi coursesApi;
 
     @PostMapping("/fromqualtrics")
-    public void submit(HttpServletRequest request, @RequestHeader Map<String, String> headers) {
-            // @RequestBody QualtricsRestSubmission qualtricsRestSubmission) {
-//        if (qualtricsRestSubmission == null) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information");
-//        }
+    public void submit(@RequestHeader Map<String, String> headers, @RequestBody QualtricsRestSubmission qualtricsRestSubmission) {
+        if (qualtricsRestSubmission == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information");
+        }
 
         String tokenHeader = headers.get("x-api-token");
 
         if (tokenHeader == null) {
-            log.info("auth header not found");
+            log.error("Auth header not found");
             return;
         }
 
@@ -58,47 +54,29 @@ public class QualtricsCourseReviewFormSubmitRestService {
 
         if (qualtricsDocument == null) {
             log.info("Could not find document by token");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information - token");
         } else {
             log.info("Document found as = {}", qualtricsDocument);
         }
 
-
-
-//        log.info("key / value");
-//        for(String key : headers.keySet()) {
-//            log.info("{} / {}", key, headers.get(key));
-//        }
-//
-//        log.info("request parameters");
-//        Map<String, String[]> parameterMap = request.getParameterMap();
-//
-//        for(String key : parameterMap.keySet()) {
-//            log.info("{} / {}", key, headers.get(key));
-//        }
-
-
 //        final String courseId = qualtricsRestSubmission.getCourseId();
-//        Course course = null;
-//
-//        if (courseId != null) {
-//            course = coursesApi.getCourse(courseId);
-//        }
-//
-//        QualtricsSubmission qualtricsSubmission = new QualtricsSubmission();
-//        qualtricsSubmission.setCourseId(courseId);
-//
-//        if (course != null && course.getName() != null) {
-//            qualtricsSubmission.setCourseTitle(course.getName());
-//        }
-//
-//        qualtricsSubmission.setUserId(qualtricsRestSubmission.getLastSubmittedBy());
-//        qualtricsSubmission.setResponseId(qualtricsRestSubmission.getResponseId());
-//
-//        List<QualtricsLaunch> qualtricsLaunches = qualtricsLaunchRepository.getByCourseId(courseId);
+        final String courseId = "1454121";
+        Course course = null;
 
-        // TODO
-//        qualtricsSubmission.setQualtricsDocument();
+        if (courseId != null) {
+            course = coursesApi.getCourse(courseId);
+        }
 
+        QualtricsSubmission qualtricsSubmission = new QualtricsSubmission();
+        qualtricsSubmission.setQualtricsDocument(qualtricsDocument);
+        qualtricsSubmission.setCourseId(courseId);
+
+        if (course != null && course.getName() != null) {
+            qualtricsSubmission.setCourseTitle(course.getName());
+        }
+
+        qualtricsSubmission.setUserId(qualtricsRestSubmission.getLastSubmittedBy());
+        qualtricsSubmission.setResponseId(qualtricsRestSubmission.getResponseId());
     }
 
     @GetMapping("/gimmie")
