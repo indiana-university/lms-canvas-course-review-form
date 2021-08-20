@@ -42,17 +42,26 @@ public class QualtricsCourseReviewFormSubmitRestService {
 //            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information");
 //        }
 
-        log.info("key / value");
-        for(String key : headers.keySet()) {
-            log.info("{} / {}", key, headers.get(key));
+        String tokenHeader = headers.get("x-api-token");
+
+        if (tokenHeader == null) {
+            log.info("auth header not found");
+        } else {
+            log.info("token found and = {}", tokenHeader);
         }
 
-        log.info("request parameters");
-        Map<String, String[]> parameterMap = request.getParameterMap();
 
-        for(String key : parameterMap.keySet()) {
-            log.info("{} / {}", key, headers.get(key));
-        }
+//        log.info("key / value");
+//        for(String key : headers.keySet()) {
+//            log.info("{} / {}", key, headers.get(key));
+//        }
+//
+//        log.info("request parameters");
+//        Map<String, String[]> parameterMap = request.getParameterMap();
+//
+//        for(String key : parameterMap.keySet()) {
+//            log.info("{} / {}", key, headers.get(key));
+//        }
 
 
 //        final String courseId = qualtricsRestSubmission.getCourseId();
