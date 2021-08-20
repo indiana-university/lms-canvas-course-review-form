@@ -2,9 +2,11 @@ package edu.iu.uits.lms.coursereviewform.rest;
 
 import canvas.client.generated.api.CoursesApi;
 import canvas.client.generated.model.Course;
+import edu.iu.uits.lms.coursereviewform.model.QualtricsDocument;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsLaunch;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsRestSubmission;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsSubmission;
+import edu.iu.uits.lms.coursereviewform.repository.QualtricsDocumentRepository;
 import edu.iu.uits.lms.coursereviewform.repository.QualtricsLaunchRepository;
 import edu.iu.uits.lms.coursereviewform.repository.QualtricsSubmissionRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,9 @@ import java.util.Map;
 @Slf4j
 public class QualtricsCourseReviewFormSubmitRestService {
     @Autowired
+    QualtricsDocumentRepository qualtricsDocumentRepository;
+
+    @Autowired
     private QualtricsLaunchRepository qualtricsLaunchRepository;
 
     @Autowired
@@ -46,9 +51,17 @@ public class QualtricsCourseReviewFormSubmitRestService {
 
         if (tokenHeader == null) {
             log.info("auth header not found");
-        } else {
-            log.info("token found and = {}", tokenHeader);
+            return;
         }
+
+        QualtricsDocument qualtricsDocument = qualtricsDocumentRepository.getByToken(tokenHeader);
+
+        if (qualtricsDocument == null) {
+            log.info("Could not find document by token");
+        } else {
+            log.info("Document found as = {}", qualtricsDocument);
+        }
+
 
 
 //        log.info("key / value");
