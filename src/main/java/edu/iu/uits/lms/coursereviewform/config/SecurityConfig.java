@@ -45,27 +45,27 @@ public class SecurityConfig {
     }
 
 
-//    @Configuration
-//    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4)
-//    public static class RestSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-//
-//        @Override
-//        public void configure(HttpSecurity http) throws Exception {
-//            http.requestMatchers().antMatchers("/rest/**")
-//                  .and()
-//                  .authorizeRequests()
-//                  .antMatchers("/rest/**")
-//                  .access("hasAuthority('SCOPE_lms:rest') and hasAuthority('ROLE_LMS_REST_ADMINS')")
-//                  .and()
-//                  .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                  .and()
-//                  .oauth2ResourceServer()
-//                  .jwt().jwtAuthenticationConverter(new CustomJwtAuthenticationConverter());
-//
-//            //Need to disable csrf so that we can use POST via REST
-//            http.csrf().disable();
-//        }
-//    }
+    @Configuration
+    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4)
+    public static class RestSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+
+        @Override
+        public void configure(HttpSecurity http) throws Exception {
+            http.requestMatchers().antMatchers("/rest/db/**")
+                  .and()
+                  .authorizeRequests()
+                  .antMatchers("/rest/db/**")
+                  .access("hasAuthority('SCOPE_lms:rest') and hasAuthority('ROLE_LMS_REST_ADMINS')")
+                  .and()
+                  .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                  .and()
+                  .oauth2ResourceServer()
+                  .jwt().jwtAuthenticationConverter(new CustomJwtAuthenticationConverter());
+
+            //Need to disable csrf so that we can use POST via REST
+            http.csrf().disable();
+        }
+    }
 
     @Configuration
     @Order(SecurityProperties.BASIC_AUTH_ORDER - 3)
