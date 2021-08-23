@@ -87,10 +87,4 @@ public class QualtricsCourseReviewFormSubmitRestService {
 
         log.info("Saved submission");
     }
-
-    @GetMapping("/gimmie")
-    public String getMe() {
-        return "You have arrived";
-    }
-
 }

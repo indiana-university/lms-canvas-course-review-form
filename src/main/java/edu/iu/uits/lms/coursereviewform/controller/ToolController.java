@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import edu.iu.uits.lms.coursereviewform.model.JsonParameters;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsDocument;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsLaunch;
+import edu.iu.uits.lms.coursereviewform.model.QualtricsSubmission;
 import edu.iu.uits.lms.coursereviewform.repository.QualtricsDocumentRepository;
 import edu.iu.uits.lms.coursereviewform.repository.QualtricsLaunchRepository;
 import edu.iu.uits.lms.lti.controller.LtiAuthenticationTokenAwareController;
@@ -61,11 +62,13 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
 
       Optional<QualtricsDocument> optionalQualtricsDocument = qualtricsDocumentRepository.findById(longDocumentId);
 
+      // Do we have all the starting information needed to prepare a qualtrics survey launch?
       if (token != null && courseId != null && ! optionalQualtricsDocument.isEmpty()) {
          final String userId = (String) token.getPrincipal();
 
          QualtricsDocument qualtricsDocument = optionalQualtricsDocument.get();
 
+         // Does someone else have this document open?
          if (qualtricsDocument.getOpen()) {
             List<QualtricsLaunch> launches = qualtricsDocument.getQualtricsLaunchs();
 
@@ -79,14 +82,12 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
                model.addAttribute("lastOpenedUserId", lastOpenedUserId);
                return new ModelAndView("inuse");
             }
-         } else {
+         } else { // nobody else has this document open. Let's open it and launch
             final Course course = coursesApi.getCourse(courseId);
-            if (verifyOkayToLaunchDocument(course, userId, optionalQualtricsDocument.get())) {
+            if (verifyOkayAndSetStateToLaunchDocument(course, userId, optionalQualtricsDocument.get())) {
 
-// [base_url]?course_id=2023963&course_title=Qualtrics%20Test%20Course&
-// last_opened_by=leward&userid1=leward&userid1_name=Lynn%20Ward&userid2=&
-// userid2_name=&userid3=&userid3_name=&userid4=&userid4_name=&userid5=&userid5_name=
-
+               // Set up this object w/ parameters needed for qualtrics so we can
+               // base64 these parameters easily and add it to the end of the launch URL
                JsonParameters jsonParameters = new JsonParameters();
                jsonParameters.setCourseId(courseId);
                jsonParameters.setCourseTitle(course.getName());
@@ -98,12 +99,15 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
 
                jsonParameters.setLastOpenedBy(userId);
 
-               // add the current launch to this list
+               // add the current launch to this list. We won't be persisting this so
+               // it's okay to just make a disposable one w/ the bare minimum need for parameter
+               // generation
                QualtricsLaunch lastQualtricsLaunch = new QualtricsLaunch();
                lastQualtricsLaunch.setUserId(jsonParameters.getLastOpenedBy());
 
                reverseSortedLaunches.add(0, lastQualtricsLaunch);
 
+               // set the userX valuyes in the JSON object by using Java reflection
                for (int i = 0; i < 4 && i < reverseSortedLaunches.size(); i++) {
                   QualtricsLaunch qualtricsLaunch = reverseSortedLaunches.get(i);
 
@@ -120,24 +124,56 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
                      setUsernameMethod.invoke(jsonParameters, localUsername);
                   } catch (Exception e) {
                      log.error("Could not invoke method ", e);
+                     throw new RuntimeException("Could not invoke Java method");
                   }
                }
 
+               // We need to get the most recent responseId (which we get on qualtrics survey submission)
+               // so that we can add that to the launch URL. If this is a first launch
+               // of this document or we never received any submissions for it, we won't
+               // have a responseId
+               List<QualtricsSubmission> reverseSortedSubmissions = optionalQualtricsDocument.get().
+                       getQualtricsSubmissions().stream().
+                       sorted(Comparator.comparing(QualtricsSubmission::getCreatedOn).reversed()).
+                       collect(Collectors.toList());
 
+               String lastResponseId = null;
+
+               if (reverseSortedSubmissions != null && ! reverseSortedSubmissions.isEmpty()) {
+                  lastResponseId = reverseSortedSubmissions.get(0).getResponseId();
+               }
+
+               // Make JSON of these now set parameters and then Base64 encode that JSON
+               // so that we can add it to the launch URL
                Gson gson = new Gson();
                String jsonString = gson.toJson(jsonParameters);
 
-               String base64EncodedParameters = new String(Base64.encodeBase64(jsonString.getBytes()));
+               String addedParameters = "";
+
+               // if we have a responseId, add this to the launch URL (Base64 encoded)
+               if (lastResponseId != null) {
+                  addedParameters = "Q_R=" +
+                          new String(Base64.encodeBase64(lastResponseId.getBytes())) +
+                          "&QDEL=1&";
+               }
+
+               // Now add the every launch parameters (Base64 encoded)
+               addedParameters = addedParameters + "Q_EED=" +
+                       new String(Base64.encodeBase64(jsonString.getBytes()));
+
+               // launch the qualtrics document w/ all the generated parameters
                return new ModelAndView("redirect:" + qualtricsDocument.getBaseUrl() +
-                       "?Q_EED=" + base64EncodedParameters);
+                       "?" + addedParameters);
             }
          }
-      }
+      } // end of - all starting parameters exist for a qualtrics launch url generation attempt
 
+      // if we reach here something was missing. Most likely a missing
+      // document_id tool lti launch parameter.
       return new ModelAndView("notfound");
    }
 
-   private boolean verifyOkayToLaunchDocument(Course course, String userId, QualtricsDocument qualtricsDocument) {
+   private boolean verifyOkayAndSetStateToLaunchDocument(Course course, String userId, QualtricsDocument qualtricsDocument) {
       if (course != null && userId != null && qualtricsDocument != null && qualtricsDocument.getBaseUrl() != null) {
          log.info("qualtrics Document = {}", qualtricsDocument);
 
@@ -149,7 +185,7 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
 
          qualtricsLaunch = qualtricsLaunchRepository.save(qualtricsLaunch);
 
-//         qualtricsDocument.setOpen(true);
+         qualtricsDocument.setOpen(true);
 
          qualtricsDocumentRepository.save(qualtricsDocument);
 

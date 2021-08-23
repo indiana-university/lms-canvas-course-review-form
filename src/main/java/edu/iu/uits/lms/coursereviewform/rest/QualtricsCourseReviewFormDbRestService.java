@@ -70,6 +70,19 @@ public class QualtricsCourseReviewFormDbRestService {
         return qualtricsDocumentRepository.save(qualtricsUpdatedDocument);
     }
 
+    @PutMapping("/documents/{id}/close")
+    public QualtricsDocument closeDocument(@PathVariable Long id) {
+        QualtricsDocument qualtricsUpdatedDocument = qualtricsDocumentRepository.findById(id).orElse(null);
+
+        if (qualtricsUpdatedDocument == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information");
+        }
+
+        qualtricsUpdatedDocument.setOpen(false);
+
+        return qualtricsDocumentRepository.save(qualtricsUpdatedDocument);
+    }
+
     @GetMapping("/documents/all")
     public List<QualtricsDocument> getAllDocuments() {
         log.info("in getAllDocuments()");
