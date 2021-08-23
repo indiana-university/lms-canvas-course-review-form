@@ -3,6 +3,7 @@ package edu.iu.uits.lms.coursereviewform.controller;
 import canvas.client.generated.api.CoursesApi;
 import canvas.client.generated.api.UsersApi;
 import canvas.client.generated.model.Course;
+import canvas.client.generated.model.User;
 import com.google.gson.Gson;
 import edu.iu.uits.lms.coursereviewform.model.JsonParameters;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsDocument;
@@ -109,13 +110,23 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
                reverseSortedLaunches.add(0, lastQualtricsLaunch);
                log.info("reverseSortedLaunches size after insertion is {}", reverseSortedLaunches.size());
 
-               // set the userX valuyes in the JSON object by using Java reflection
+               // set the userX values in the JSON object by using Java reflection
                for (int i = 0; i < 5 && i < reverseSortedLaunches.size(); i++) {
                   log.info("size = {}, i = {}", reverseSortedLaunches.size(), i);
                   QualtricsLaunch qualtricsLaunch = reverseSortedLaunches.get(i);
 
                   String localUserId = qualtricsLaunch.getUserId();
-                  String localUsername = usersApi.getUserBySisLoginId(localUserId).getName();
+
+                  User localUser = usersApi.getUserBySisLoginId(localUserId);
+
+                  String localUsername = null;
+
+                  // in case (for whatever reason) the name in the db canvas can't find
+                  if (localUser != null) {
+                     localUsername = usersApi.getUserBySisLoginId(localUserId).getName();
+                  } else {
+                     log.info("Can't find user {}", localUserId);
+                  }
 
                   try {
                      Method setUserIdMethod = jsonParameters.getClass().
