@@ -105,10 +105,13 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
                QualtricsLaunch lastQualtricsLaunch = new QualtricsLaunch();
                lastQualtricsLaunch.setUserId(jsonParameters.getLastOpenedBy());
 
+               log.info("reverseSortedLaunches size before insertion is {}", reverseSortedLaunches.size());
                reverseSortedLaunches.add(0, lastQualtricsLaunch);
+               log.info("reverseSortedLaunches size after insertion is {}", reverseSortedLaunches.size());
 
                // set the userX valuyes in the JSON object by using Java reflection
                for (int i = 0; i < 5 && i < reverseSortedLaunches.size(); i++) {
+                  log.info("size = {}, i = {}", reverseSortedLaunches.size(), i);
                   QualtricsLaunch qualtricsLaunch = reverseSortedLaunches.get(i);
 
                   String localUserId = qualtricsLaunch.getUserId();
