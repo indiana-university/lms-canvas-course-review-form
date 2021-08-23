@@ -106,13 +106,10 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
                QualtricsLaunch lastQualtricsLaunch = new QualtricsLaunch();
                lastQualtricsLaunch.setUserId(jsonParameters.getLastOpenedBy());
 
-               log.info("reverseSortedLaunches size before insertion is {}", reverseSortedLaunches.size());
                reverseSortedLaunches.add(0, lastQualtricsLaunch);
-               log.info("reverseSortedLaunches size after insertion is {}", reverseSortedLaunches.size());
 
                // set the userX values in the JSON object by using Java reflection
                for (int i = 0; i < 5 && i < reverseSortedLaunches.size(); i++) {
-                  log.info("size = {}, i = {}", reverseSortedLaunches.size(), i);
                   QualtricsLaunch qualtricsLaunch = reverseSortedLaunches.get(i);
 
                   String localUserId = qualtricsLaunch.getUserId();
@@ -124,8 +121,6 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
                   // in case (for whatever reason) the name in the db canvas can't find
                   if (localUser != null) {
                      localUsername = usersApi.getUserBySisLoginId(localUserId).getName();
-                  } else {
-                     log.info("Can't find user {}", localUserId);
                   }
 
                   try {
