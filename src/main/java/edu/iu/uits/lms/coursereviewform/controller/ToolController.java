@@ -27,6 +27,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -71,18 +73,22 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
 
          // Does someone else have this document open?
          if (qualtricsDocument.getOpen()) {
-            List<QualtricsLaunch> launches = qualtricsDocument.getQualtricsLaunchs();
+            List<QualtricsLaunch> reverseSortedLaunches = qualtricsDocument.getQualtricsLaunchs();
 
-            if (launches != null && ! launches.isEmpty()) {
-               List<QualtricsLaunch> reverseSortedLaunches = launches.stream().
+            if (reverseSortedLaunches != null) {
+               reverseSortedLaunches = reverseSortedLaunches.stream().
                        sorted(Comparator.comparing(QualtricsLaunch::getCreatedOn).reversed()).
                        collect(Collectors.toList());
-
-               final String lastOpenedUserId = reverseSortedLaunches.get(0).getUserId();
-
-               model.addAttribute("lastOpenedUserId", lastOpenedUserId);
-               return new ModelAndView("inuse");
+            } else {
+               QualtricsLaunch qualtricsLaunch = new QualtricsLaunch();
+               qualtricsLaunch.setUserId("unknown");
+               reverseSortedLaunches = Arrays.asList(qualtricsLaunch);
             }
+
+            final String lastOpenedUserId = reverseSortedLaunches.get(0).getUserId();
+
+            model.addAttribute("lastOpenedUserId", lastOpenedUserId);
+            return new ModelAndView("inuse");
          } else { // nobody else has this document open. Let's open it and launch
             final Course course = coursesApi.getCourse(courseId);
             if (verifyOkayAndSetStateToLaunchDocument(course, userId, optionalQualtricsDocument.get())) {
@@ -93,10 +99,15 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
                jsonParameters.setCourseId(courseId);
                jsonParameters.setCourseTitle(course.getName());
 
-               List<QualtricsLaunch> reverseSortedLaunches = optionalQualtricsDocument.get().
-                       getQualtricsLaunchs().stream().
-                       sorted(Comparator.comparing(QualtricsLaunch::getCreatedOn).reversed()).
-                       collect(Collectors.toList());
+               List<QualtricsLaunch> reverseSortedLaunches = optionalQualtricsDocument.get().getQualtricsLaunchs();
+
+               if (reverseSortedLaunches != null) {
+                  reverseSortedLaunches = reverseSortedLaunches.stream().
+                          sorted(Comparator.comparing(QualtricsLaunch::getCreatedOn).reversed()).
+                          collect(Collectors.toList());
+               } else {
+                  reverseSortedLaunches = new ArrayList<>();
+               }
 
                jsonParameters.setLastOpenedBy(userId);
 
@@ -141,10 +152,13 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
                // so that we can add that to the launch URL. If this is a first launch
                // of this document or we never received any submissions for it, we won't
                // have a responseId
-               List<QualtricsSubmission> reverseSortedSubmissions = optionalQualtricsDocument.get().
-                       getQualtricsSubmissions().stream().
-                       sorted(Comparator.comparing(QualtricsSubmission::getCreatedOn).reversed()).
-                       collect(Collectors.toList());
+               List<QualtricsSubmission> reverseSortedSubmissions = optionalQualtricsDocument.get().getQualtricsSubmissions();
+
+               if (reverseSortedSubmissions != null) {
+                  reverseSortedSubmissions = reverseSortedSubmissions.stream().
+                          sorted(Comparator.comparing(QualtricsSubmission::getCreatedOn).reversed()).
+                          collect(Collectors.toList());
+               }
 
                String lastResponseId = null;
 
