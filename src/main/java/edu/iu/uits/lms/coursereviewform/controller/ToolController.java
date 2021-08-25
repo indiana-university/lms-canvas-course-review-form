@@ -96,7 +96,10 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
             return new ModelAndView("inuse");
          } else { // nobody else has this document open. Let's open it and launch
             final Course course = coursesApi.getCourse(courseId);
-            if (verifyOkayAndSetStateToLaunchDocument(course, userId, optionalQualtricsDocument.get())) {
+
+            qualtricsDocument = verifyOkayAndSetStateToLaunchDocument(course, userId, optionalQualtricsDocument.get());
+
+            if (qualtricsDocument != null) {
 
                // Set up this object w/ parameters needed for qualtrics so we can
                // base64 these parameters easily and add it to the end of the launch URL
@@ -171,8 +174,6 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
                Gson gson = new Gson();
                String jsonString = gson.toJson(jsonParameters);
 
-               log.info("json parameters = {}", jsonString);
-
                String addedParameters = "";
 
                // if we have a responseId, add this to the launch URL (Base64 encoded)
@@ -198,7 +199,7 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
       return new ModelAndView("notfound");
    }
 
-   private boolean verifyOkayAndSetStateToLaunchDocument(Course course, String userId, QualtricsDocument qualtricsDocument) {
+   private QualtricsDocument verifyOkayAndSetStateToLaunchDocument(Course course, String userId, QualtricsDocument qualtricsDocument) {
       if (course != null && userId != null && qualtricsDocument != null && qualtricsDocument.getBaseUrl() != null) {
          QualtricsLaunch qualtricsLaunch = new QualtricsLaunch();
          qualtricsLaunch.setQualtricsDocument(qualtricsDocument);
@@ -210,10 +211,10 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
 
          qualtricsDocument.setOpen(true);
 
-         qualtricsDocumentRepository.save(qualtricsDocument);
+         qualtricsDocument = qualtricsDocumentRepository.save(qualtricsDocument);
 
-         return true;
+         return qualtricsDocument;
       }
-      return false;
+      return null;
    }
 }

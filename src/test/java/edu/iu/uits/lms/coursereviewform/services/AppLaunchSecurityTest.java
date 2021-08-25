@@ -14,6 +14,7 @@ import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
 import edu.iu.uits.lms.coursereviewform.config.ToolConfig;
 import edu.iu.uits.lms.coursereviewform.controller.ToolController;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ToolController.class)
 @Import(ToolConfig.class)
 @ActiveProfiles("none")
+@Slf4j
 public class AppLaunchSecurityTest {
 
    @Autowired
@@ -73,7 +75,14 @@ public class AppLaunchSecurityTest {
       qualtricsDocument1.setBaseUrl("https://www.iub.edu");
       qualtricsDocument1.setOpen(false);
 
+      QualtricsLaunch qualtricsLaunch = new QualtricsLaunch();
+      qualtricsLaunch.setUserId("userId");
+      qualtricsLaunch.setCreatedOn(new Date());
+
+      qualtricsDocument1.setQualtricsLaunchs(Arrays.asList(qualtricsLaunch));
+
       Mockito.when(qualtricsDocumentRepository.findById(1L)).thenReturn(java.util.Optional.of(qualtricsDocument1));
+      Mockito.when(qualtricsDocumentRepository.save(qualtricsDocument1)).thenReturn(qualtricsDocument1);
 
       QualtricsDocument qualtricsDocument2 = new QualtricsDocument();
       qualtricsDocument2.setId(2L);
@@ -81,7 +90,10 @@ public class AppLaunchSecurityTest {
       qualtricsDocument2.setBaseUrl("https://www.iub.edu");
       qualtricsDocument2.setOpen(true);
 
+      qualtricsDocument2.setQualtricsLaunchs(Arrays.asList(qualtricsLaunch));
+
       Mockito.when(qualtricsDocumentRepository.findById(2L)).thenReturn(java.util.Optional.of(qualtricsDocument2));
+      Mockito.when(qualtricsDocumentRepository.save(qualtricsDocument2)).thenReturn(qualtricsDocument2);
 
       Course course = new Course();
       course.setName("Test course name");
@@ -196,16 +208,26 @@ public class AppLaunchSecurityTest {
 
       qualtricsLaunches.add(qualtricsLaunch4);
 
+      // Add pause so dates are guaranteed to be different
+      Thread.sleep(1000);
+
+      QualtricsLaunch qualtricsLaunch5 = new QualtricsLaunch();
+      qualtricsLaunch5.setUserId("userId");
+      qualtricsLaunch5.setCreatedOn(new Date());
+
+      qualtricsLaunches.add(qualtricsLaunch5);
+
       qualtricsDocument3.setQualtricsLaunchs(qualtricsLaunches);
 
       QualtricsSubmission qualtricsSubmission = new QualtricsSubmission();
-      qualtricsSubmission.setUserId("user1");
+      qualtricsSubmission.setUserId("user4");
       qualtricsSubmission.setResponseId("responseId1");
       qualtricsSubmission.setCreatedOn(new Date());
 
       qualtricsDocument3.setQualtricsSubmissions(Arrays.asList(qualtricsSubmission));
 
       Mockito.when(qualtricsDocumentRepository.findById(3L)).thenReturn(java.util.Optional.of(qualtricsDocument3));
+      Mockito.when(qualtricsDocumentRepository.save(qualtricsDocument3)).thenReturn(qualtricsDocument3);
 
       JsonParameters jsonParameters = new JsonParameters();
       jsonParameters.setCourseId("1234");
