@@ -72,12 +72,13 @@ public class QualtricsCourseReviewFormSubmitRestService {
         qualtricsSubmission.setUserId(qualtricsRestSubmission.getLastSubmittedBy());
         qualtricsSubmission.setResponseId(qualtricsRestSubmission.getResponseId());
 
-        qualtricsSubmissionRepository.save(qualtricsSubmission);
+        qualtricsSubmission = qualtricsSubmissionRepository.save(qualtricsSubmission);
 
         qualtricsDocument.setOpen(false);
 
         qualtricsDocumentRepository.save(qualtricsDocument);
 
-        log.info("Saved submission");
+        log.info("Saved submission id {} from user {} for documentId {}",
+                qualtricsSubmission.getId(), qualtricsSubmission.getUserId(), qualtricsDocument.getId());
     }
 }
