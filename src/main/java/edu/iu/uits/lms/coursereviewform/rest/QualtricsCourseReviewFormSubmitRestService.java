@@ -3,17 +3,14 @@ package edu.iu.uits.lms.coursereviewform.rest;
 import canvas.client.generated.api.CoursesApi;
 import canvas.client.generated.model.Course;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsDocument;
-import edu.iu.uits.lms.coursereviewform.model.QualtricsLaunch;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsRestSubmission;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsSubmission;
 import edu.iu.uits.lms.coursereviewform.repository.QualtricsDocumentRepository;
-import edu.iu.uits.lms.coursereviewform.repository.QualtricsLaunchRepository;
 import edu.iu.uits.lms.coursereviewform.repository.QualtricsSubmissionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -21,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -57,8 +52,6 @@ public class QualtricsCourseReviewFormSubmitRestService {
         if (qualtricsDocument == null) {
             log.error("Could not find document by token = {}", tokenHeader);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information - token");
-        } else {
-            log.info("Document found as = {}", qualtricsDocument);
         }
 
         final String courseId = qualtricsRestSubmission.getCourseId();

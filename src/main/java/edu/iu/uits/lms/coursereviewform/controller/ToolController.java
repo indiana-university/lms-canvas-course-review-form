@@ -203,8 +203,6 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
 
    private boolean verifyOkayAndSetStateToLaunchDocument(Course course, String userId, QualtricsDocument qualtricsDocument) {
       if (course != null && userId != null && qualtricsDocument != null && qualtricsDocument.getBaseUrl() != null) {
-         log.info("qualtrics Document = {}", qualtricsDocument);
-
          QualtricsLaunch qualtricsLaunch = new QualtricsLaunch();
          qualtricsLaunch.setQualtricsDocument(qualtricsDocument);
          qualtricsLaunch.setCourseId(course.getId());

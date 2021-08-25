@@ -80,6 +80,7 @@ public class QualtricsCourseReviewFormDbRestService {
 
         qualtricsUpdatedDocument.setOpen(false);
 
+        log.info("Closed document {}", id);
         return qualtricsDocumentRepository.save(qualtricsUpdatedDocument);
     }
 
