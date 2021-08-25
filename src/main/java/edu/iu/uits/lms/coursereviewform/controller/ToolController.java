@@ -116,14 +116,6 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
 
                jsonParameters.setLastOpenedBy(userId);
 
-               // add the current launch to this list. We won't be persisting this so
-               // it's okay to just make a disposable one w/ the bare minimum need for parameter
-               // generation
-               QualtricsLaunch lastQualtricsLaunch = new QualtricsLaunch();
-               lastQualtricsLaunch.setUserId(jsonParameters.getLastOpenedBy());
-
-               reverseSortedLaunches.add(0, lastQualtricsLaunch);
-
                // set the userX values in the JSON object by using Java reflection
                for (int i = 0; i < 5 && i < reverseSortedLaunches.size(); i++) {
                   QualtricsLaunch qualtricsLaunch = reverseSortedLaunches.get(i);
