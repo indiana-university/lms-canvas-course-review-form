@@ -61,7 +61,8 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
 
       log.info("documentId = {}", documentId);
 
-      if (documentId == null) {
+      // if not set, documentId (document_id in lti launch) will come in as string "null"
+      if (documentId == null || documentId.equals("null")) {
          return new ModelAndView("notfound");
       }
 
