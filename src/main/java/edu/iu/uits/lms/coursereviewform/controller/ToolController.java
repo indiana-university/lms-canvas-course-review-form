@@ -125,9 +125,6 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
 
                   String localUserId = qualtricsLaunch.getUserId();
 
-                  log.info("XXXXXX adding last user {} with launch date {} to launch",
-                          localUserId, qualtricsLaunch.getCreatedOn());
-
                   User localUser = usersApi.getUserBySisLoginId(localUserId);
 
                   String localUsername = null;

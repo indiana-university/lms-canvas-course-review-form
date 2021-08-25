@@ -14,7 +14,6 @@ import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
 import edu.iu.uits.lms.coursereviewform.config.ToolConfig;
 import edu.iu.uits.lms.coursereviewform.controller.ToolController;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +48,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ToolController.class)
 @Import(ToolConfig.class)
 @ActiveProfiles("none")
-@Slf4j
 public class AppLaunchSecurityTest {
 
    @Autowired
