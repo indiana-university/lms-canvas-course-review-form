@@ -61,6 +61,10 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
 
       log.info("documentId = {}", documentId);
 
+      if (documentId == null) {
+         return new ModelAndView("notfound");
+      }
+
       long longDocumentId = Long.parseLong(documentId);
 
       Optional<QualtricsDocument> optionalQualtricsDocument = qualtricsDocumentRepository.findById(longDocumentId);
