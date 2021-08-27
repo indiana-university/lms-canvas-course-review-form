@@ -5,6 +5,7 @@ import edu.iu.uits.lms.common.samesite.EnableCookieFilter;
 import edu.iu.uits.lms.common.server.GitRepositoryState;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.server.ServerUtils;
+import edu.iu.uits.lms.common.session.EnableCourseSessionService;
 import edu.iu.uits.lms.lti.config.EnableGlobalErrorHandler;
 import edu.iu.uits.lms.lti.config.EnableLtiClient;
 import edu.iu.uits.lms.coursereviewform.config.ToolConfig;
@@ -32,6 +33,7 @@ import java.util.Date;
 @EnableLtiClient
 @EnableCanvasClient
 @EnableConfigurationProperties(GitRepositoryState.class)
+@EnableCourseSessionService(sessionKey = "course_review_form_course_session")
 public class WebApplication {
 
     @Autowired

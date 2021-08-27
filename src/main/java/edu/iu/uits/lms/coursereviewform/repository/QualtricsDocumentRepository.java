@@ -6,5 +6,4 @@ import org.springframework.stereotype.Component;
 
 @Component("QualtricsDocumentRepository")
 public interface QualtricsDocumentRepository extends PagingAndSortingRepository<QualtricsDocument, Long> {
-    QualtricsDocument getByToken(String token);
 }

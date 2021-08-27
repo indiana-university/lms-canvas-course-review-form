@@ -135,10 +135,6 @@ public class QualtricsCourseReviewFormDbRestService {
             qualtricsUpdatedSubmission.setCourseId(qualtricsSubmission.getCourseId());
         }
 
-        if (qualtricsSubmission.getCourseTitle() != null) {
-            qualtricsUpdatedSubmission.setCourseTitle(qualtricsSubmission.getCourseTitle());
-        }
-
         if (qualtricsSubmission.getUserId() == null) {
             qualtricsUpdatedSubmission.setUserId(qualtricsSubmission.getUserId());
         }

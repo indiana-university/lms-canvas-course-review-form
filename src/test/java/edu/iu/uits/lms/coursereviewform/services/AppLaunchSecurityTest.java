@@ -1,9 +1,7 @@
 package edu.iu.uits.lms.coursereviewform.services;
 
-import canvas.client.generated.api.CoursesApi;
-import canvas.client.generated.api.UsersApi;
-import canvas.client.generated.model.Course;
 import com.google.gson.Gson;
+import edu.iu.uits.lms.common.session.CourseSessionService;
 import edu.iu.uits.lms.coursereviewform.model.JsonParameters;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsDocument;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsLaunch;
@@ -32,13 +30,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.util.UriComponentsBuilder;
+import org.tsugi.basiclti.BasicLTIConstants;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -54,10 +56,7 @@ public class AppLaunchSecurityTest {
    private MockMvc mvc;
 
    @MockBean
-   private CoursesApi coursesApi;
-
-   @MockBean
-   private UsersApi usersApi;
+   private CourseSessionService courseSessionService;
 
    @MockBean
    private QualtricsDocumentRepository qualtricsDocumentRepository;
@@ -75,6 +74,8 @@ public class AppLaunchSecurityTest {
 
       QualtricsLaunch qualtricsLaunch = new QualtricsLaunch();
       qualtricsLaunch.setUserId("userId");
+      qualtricsLaunch.setUserFullName("User Fullname");
+
       qualtricsLaunch.setCreatedOn(new Date());
 
       qualtricsDocument1.setQualtricsLaunchs(Arrays.asList(qualtricsLaunch));
@@ -93,10 +94,8 @@ public class AppLaunchSecurityTest {
       Mockito.when(qualtricsDocumentRepository.findById(2L)).thenReturn(java.util.Optional.of(qualtricsDocument2));
       Mockito.when(qualtricsDocumentRepository.save(qualtricsDocument2)).thenReturn(qualtricsDocument2);
 
-      Course course = new Course();
-      course.setName("Test course name");
-
-      Mockito.when(coursesApi.getCourse(any())).thenReturn(course);
+      Mockito.when(courseSessionService.getAttributeFromSession(any(HttpSession.class), any(), eq(BasicLTIConstants.LIS_PERSON_NAME_FULL), eq(String.class))).thenReturn("User Fullname");
+      Mockito.when(courseSessionService.getAttributeFromSession(any(HttpSession.class), any(), eq(BasicLTIConstants.CONTEXT_TITLE), eq(String.class))).thenReturn("Test course name");
    }
 
    @Test
@@ -141,19 +140,20 @@ public class AppLaunchSecurityTest {
       jsonParameters.setCourseTitle("Test course name");
       jsonParameters.setLastOpenedBy("userId");
       jsonParameters.setUserId1("userId");
+      jsonParameters.setUserId1Name("User Fullname");
 
       Gson gson = new Gson();
       String jsonString = gson.toJson(jsonParameters);
 
-      String expectedRedirectUrl = "https://www.iub.edu?Q_EED=" +
-              new String(Base64.encodeBase64(jsonString.getBytes()));
+      UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("https://www.iub.edu");
+      uriComponentsBuilder.queryParam("Q_EED", new String(Base64.encodeBase64(jsonString.getBytes())));
 
       //This is a secured endpoint and should not not allow access without authn
       mvc.perform(get("/app/index/1234/1")
             .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl(expectedRedirectUrl));
+            .andExpect(redirectedUrl(uriComponentsBuilder.toUriString()));
    }
 
    @Test
@@ -175,6 +175,7 @@ public class AppLaunchSecurityTest {
 
       QualtricsLaunch qualtricsLaunch1 = new QualtricsLaunch();
       qualtricsLaunch1.setUserId("user1");
+      qualtricsLaunch1.setUserFullName("User Fullname");
       qualtricsLaunch1.setCreatedOn(new Date());
 
       qualtricsLaunches.add(qualtricsLaunch1);
@@ -184,6 +185,7 @@ public class AppLaunchSecurityTest {
 
       QualtricsLaunch qualtricsLaunch2 = new QualtricsLaunch();
       qualtricsLaunch2.setUserId("user2");
+      qualtricsLaunch2.setUserFullName("User Fullname");
       qualtricsLaunch2.setCreatedOn(new Date());
 
       qualtricsLaunches.add(qualtricsLaunch2);
@@ -193,6 +195,7 @@ public class AppLaunchSecurityTest {
 
       QualtricsLaunch qualtricsLaunch3 = new QualtricsLaunch();
       qualtricsLaunch3.setUserId("user3");
+      qualtricsLaunch3.setUserFullName("User Fullname");
       qualtricsLaunch3.setCreatedOn(new Date());
 
       qualtricsLaunches.add(qualtricsLaunch3);
@@ -202,6 +205,7 @@ public class AppLaunchSecurityTest {
 
       QualtricsLaunch qualtricsLaunch4 = new QualtricsLaunch();
       qualtricsLaunch4.setUserId("user4");
+      qualtricsLaunch4.setUserFullName("User Fullname");
       qualtricsLaunch4.setCreatedOn(new Date());
 
       qualtricsLaunches.add(qualtricsLaunch4);
@@ -211,6 +215,7 @@ public class AppLaunchSecurityTest {
 
       QualtricsLaunch qualtricsLaunch5 = new QualtricsLaunch();
       qualtricsLaunch5.setUserId("userId");
+      qualtricsLaunch5.setUserFullName("User Fullname");
       qualtricsLaunch5.setCreatedOn(new Date());
 
       qualtricsLaunches.add(qualtricsLaunch5);
@@ -232,26 +237,30 @@ public class AppLaunchSecurityTest {
       jsonParameters.setCourseTitle("Test course name");
       jsonParameters.setLastOpenedBy("userId");
       jsonParameters.setUserId1("userId");
+      jsonParameters.setUserId1Name("User Fullname");
       jsonParameters.setUserId2("user4");
+      jsonParameters.setUserId2Name("User Fullname");
       jsonParameters.setUserId3("user3");
+      jsonParameters.setUserId3Name("User Fullname");
       jsonParameters.setUserId4("user2");
+      jsonParameters.setUserId4Name("User Fullname");
       jsonParameters.setUserId5("user1");
+      jsonParameters.setUserId5Name("User Fullname");
 
       Gson gson = new Gson();
       String jsonString = gson.toJson(jsonParameters);
 
-      String expectedRedirectUrl = "https://www.iub.edu?" + "Q_R=" +
-              new String(Base64.encodeBase64("responseId1".getBytes())) +
-              "&QDEL=1" +
-              "&Q_EED=" +
-              new String(Base64.encodeBase64(jsonString.getBytes()));
+      UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("https://www.iub.edu");
+      uriComponentsBuilder.queryParam("Q_R", new String(Base64.encodeBase64("responseId1".getBytes())));
+      uriComponentsBuilder.queryParam("QDEL", "1");
+      uriComponentsBuilder.queryParam("Q_EED", new String(Base64.encodeBase64(jsonString.getBytes())));
 
       //This is a secured endpoint and should not not allow access without authn
       mvc.perform(get("/app/index/1234/3")
                       .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                       .contentType(MediaType.APPLICATION_JSON))
               .andExpect(status().is3xxRedirection())
-              .andExpect(redirectedUrl(expectedRedirectUrl));
+              .andExpect(redirectedUrl(uriComponentsBuilder.toUriString()));
    }
 
    @Test

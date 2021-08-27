@@ -38,9 +38,6 @@ public class QualtricsSubmission implements Serializable {
     @Column(name = "COURSE_ID")
     private String courseId;
 
-    @Column(name = "COURSE_TITLE")
-    private String courseTitle;
-
     @Column(name = "USER_ID")
     private String userId;
 

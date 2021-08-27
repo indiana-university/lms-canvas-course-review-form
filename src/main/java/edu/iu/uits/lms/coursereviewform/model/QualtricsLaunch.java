@@ -44,6 +44,9 @@ public class QualtricsLaunch implements Serializable {
     @Column(name = "USER_ID")
     private String userId;
 
+    @Column(name = "USER_FULL_NAME")
+    private String userFullName;
+
     @Column(name = "CREATED_ON")
     private Date createdOn;
 

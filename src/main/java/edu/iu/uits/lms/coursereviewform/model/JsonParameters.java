@@ -7,10 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class JsonParameters {
-// [base_url]?course_id=2023963&course_title=Qualtrics%20Test%20Course&
-// last_opened_by=leward&userid1=leward&userid1_name=Lynn%20Ward&userid2=&
-// userid2_name=&userid3=&userid3_name=&userid4=&userid4_name=&userid5=&userid5_name=
-
     @SerializedName("course_id")
     String courseId;
 
