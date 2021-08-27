@@ -28,9 +28,9 @@ public class QualtricsCourseReviewFormSubmitRestService {
     @Autowired
     private QualtricsSubmissionRepository qualtricsSubmissionRepository;
 
-    @PostMapping("/fromqualtrics/{document_id_string}")
-    public void submit(@PathVariable("document_id_string") String documentIdString, @RequestHeader Map<String, String> headers, @RequestBody QualtricsRestSubmission qualtricsRestSubmission) {
-        if (qualtricsRestSubmission == null || documentIdString == null || documentIdString.equals("null")) {
+    @PostMapping("/fromqualtrics/{document_id}")
+    public void submit(@PathVariable("document_id") Long documentId, @RequestHeader Map<String, String> headers, @RequestBody QualtricsRestSubmission qualtricsRestSubmission) {
+        if (qualtricsRestSubmission == null || documentId == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information");
         }
 
@@ -42,8 +42,6 @@ public class QualtricsCourseReviewFormSubmitRestService {
         }
 
         try {
-            long documentId = Long.parseLong(documentIdString);
-
             QualtricsDocument qualtricsDocument = qualtricsDocumentRepository.findById(documentId).orElse(null);
 
             if (qualtricsDocument == null) {

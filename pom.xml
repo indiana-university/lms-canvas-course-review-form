@@ -80,10 +80,6 @@
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
-            <artifactId>lms-canvas-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>edu.iu.uits.lms</groupId>
             <artifactId>common-configuration</artifactId>
         </dependency>
         <dependency>

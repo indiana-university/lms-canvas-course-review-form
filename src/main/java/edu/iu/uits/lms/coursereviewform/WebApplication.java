@@ -1,6 +1,5 @@
 package edu.iu.uits.lms.coursereviewform;
 
-import canvas.config.EnableCanvasClient;
 import edu.iu.uits.lms.common.samesite.EnableCookieFilter;
 import edu.iu.uits.lms.common.server.GitRepositoryState;
 import edu.iu.uits.lms.common.server.ServerInfo;
@@ -31,7 +30,6 @@ import java.util.Date;
 @EnableRedisConfiguration
 @EnableCookieFilter(ignoredRequestPatterns = {"/rest/**"})
 @EnableLtiClient
-@EnableCanvasClient
 @EnableConfigurationProperties(GitRepositoryState.class)
 @EnableCourseSessionService(sessionKey = "course_review_form_course_session")
 public class WebApplication {
