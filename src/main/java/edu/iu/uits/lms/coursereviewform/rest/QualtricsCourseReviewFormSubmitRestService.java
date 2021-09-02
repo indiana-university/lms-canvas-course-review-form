@@ -44,8 +44,8 @@ public class QualtricsCourseReviewFormSubmitRestService {
         QualtricsDocument qualtricsDocument = qualtricsService.getDocument(documentId);
 
         if (qualtricsDocument == null) {
-            log.error("Could not find document by token = {}", tokenHeader);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information - token");
+            log.error("Could not find document by id = {}", documentId);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information - id");
         }
 
         if (! tokenHeader.equals(qualtricsDocument.getToken())) {
