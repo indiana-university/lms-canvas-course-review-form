@@ -58,7 +58,7 @@ public class QualtricsCourseReviewFormSubmitRestService {
         QualtricsCourse qualtricsCourse = qualtricsService.getCourse(qualtricsDocument, courseId);
 
         if (qualtricsCourse == null) {
-            log.error("Cannot find course for document id {}", qualtricsDocument.getId());
+            log.error("Cannot find course with id {} for document id {}", courseId, qualtricsDocument.getId());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot find course for document");
         }
 
