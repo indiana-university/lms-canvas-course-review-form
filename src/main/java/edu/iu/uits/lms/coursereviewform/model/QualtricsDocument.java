@@ -29,6 +29,10 @@ public class QualtricsDocument implements Serializable {
     @GeneratedValue(generator = "QUALTRICS_DOCUMENT_ID_SEQ")
     private Long id;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "qualtricsDocument", fetch = FetchType.LAZY)
+    private List<QualtricsCourse> qualtricsCourses;
+
     @Column(name = "NAME")
     private String name;
 
@@ -38,26 +42,12 @@ public class QualtricsDocument implements Serializable {
     @Column(name = "TOKEN")
     private String token;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "qualtricsDocument", fetch = FetchType.LAZY)
-    private List<QualtricsLaunch> qualtricsLaunchs;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "qualtricsDocument", fetch = FetchType.LAZY)
-    private List<QualtricsSubmission> qualtricsSubmissions;
-
-    private Boolean open;
-
     @Column(name = "CREATED_ON")
     private Date createdOn;
 
     @PreUpdate
     @PrePersist
-    public void updateStuff() {
-        if (open == null) {
-            open = false;
-        }
-
+    public void updateCreatedOn() {
         if (createdOn == null) {
             createdOn = new Date();
         }

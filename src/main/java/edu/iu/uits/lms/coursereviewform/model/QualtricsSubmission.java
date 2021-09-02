@@ -32,11 +32,8 @@ public class QualtricsSubmission implements Serializable {
     @JsonIgnore
     @ManyToOne
     @ToString.Exclude
-    @JoinColumn(name = "DOCUMENT_ID", referencedColumnName = "ID", nullable = false)
-    private QualtricsDocument qualtricsDocument;
-
-    @Column(name = "COURSE_ID")
-    private String courseId;
+    @JoinColumn(name = "QUALTRICS_COURSE_ID", referencedColumnName = "ID", nullable = false)
+    private QualtricsCourse qualtricsCourse;
 
     @Column(name = "USER_ID")
     private String userId;
