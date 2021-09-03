@@ -69,7 +69,7 @@ public class AppLaunchSecurityTest {
 
    @Test
    public void appNoAuthnLaunch() throws Exception {
-      //This is a secured endpoint and should not not allow access without authn
+      //This is a secured endpoint and should not allow access without authn
       mvc.perform(get("/app/index/1234/1")
             .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
@@ -85,7 +85,7 @@ public class AppLaunchSecurityTest {
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
-      //This is a secured endpoint and should not not allow access without authn
+      //This is a secured endpoint and should not allow access without authn
       ResultActions mockMvcAction = mvc.perform(get("/app/index/1234/1")
               .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
               .contentType(MediaType.APPLICATION_JSON));
@@ -141,7 +141,7 @@ public class AppLaunchSecurityTest {
       UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("https://www.iub.edu");
       uriComponentsBuilder.queryParam("Q_EED", new String(Base64.encodeBase64(jsonString.getBytes())));
 
-      //This is a secured endpoint and should not not allow access without authn
+      //This is a secured endpoint and should not allow access without authn
       mvc.perform(get("/app/index/1234/1")
             .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
@@ -243,7 +243,7 @@ public class AppLaunchSecurityTest {
       uriComponentsBuilder.queryParam("QDEL", "1");
       uriComponentsBuilder.queryParam("Q_EED", new String(Base64.encodeBase64(jsonString.getBytes())));
 
-      //This is a secured endpoint and should not not allow access without authn
+      //This is a secured endpoint and should not allow access without authn
       mvc.perform(get("/app/index/1234/1")
                       .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                       .contentType(MediaType.APPLICATION_JSON))
@@ -278,52 +278,52 @@ public class AppLaunchSecurityTest {
       Mockito.when(qualtricsService.createOrGetExistingCourse(eq(qualtricsDocument), eq("1234"), any(String.class))).thenReturn(qualtricsCourse);
       Mockito.when(qualtricsService.getAscendingOrderedUniqueLaunches(qualtricsCourse)).thenReturn(Arrays.asList(qualtricsLaunch));
 
-      //This is a secured endpoint and should not not allow access without authn
+      //This is a secured endpoint and should not allow access without authn
       mvc.perform(get("/app/index/1234/1")
                       .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                       .contentType(MediaType.APPLICATION_JSON))
               .andExpect(status().isOk())
               .andExpect(view().name("inuse"));
    }
-//
-//   @Test
-//   public void appAuthnDocumentNotFoundLaunch() throws Exception {
-//      LtiAuthenticationToken token = new LtiAuthenticationToken("userId",
-//              "1234", "systemId",
-//              AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, "authority"),
-//              "unit_test");
-//
-//      SecurityContextHolder.getContext().setAuthentication(token);
-//
-//      //This is a secured endpoint and should not not allow access without authn
-//      mvc.perform(get("/app/index/1234/33")
-//                      .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
-//                      .contentType(MediaType.APPLICATION_JSON))
-//              .andExpect(status().isOk())
-//              .andExpect(view().name("notfound"));
-//   }
-//
-//   @Test
-//   public void randomUrlNoAuth() throws Exception {
-//      //This is a secured endpoint and should not not allow access without authn
-//      mvc.perform(get("/asdf/foobar")
-//            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
-//            .contentType(MediaType.APPLICATION_JSON))
-//            .andExpect(status().isForbidden());
-//   }
-//
-//   @Test
-//   public void randomUrlWithAuth() throws Exception {
-//      LtiAuthenticationToken token = new LtiAuthenticationToken("userId",
-//            "1234", "systemId",
-//            AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, "authority"),
-//            "unit_test");
-//      SecurityContextHolder.getContext().setAuthentication(token);
-//
-//      //This is a secured endpoint and should not not allow access without authn
-//      mvc.perform(get("/asdf/foobar")
-//            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
-//            .contentType(MediaType.APPLICATION_JSON))
-//            .andExpect(status().isNotFound());
-//   }
+
+   @Test
+   public void appAuthnDocumentNotFoundLaunch() throws Exception {
+      LtiAuthenticationToken token = new LtiAuthenticationToken("userId",
+              "1234", "systemId",
+              AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, "authority"),
+              "unit_test");
+
+      SecurityContextHolder.getContext().setAuthentication(token);
+
+      //This is a secured endpoint and should not allow access without authn
+      mvc.perform(get("/app/index/1234/33")
+                      .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+                      .contentType(MediaType.APPLICATION_JSON))
+              .andExpect(status().isOk())
+              .andExpect(view().name("notfound"));
+   }
+
+   @Test
+   public void randomUrlNoAuth() throws Exception {
+      //This is a secured endpoint and should not allow access without authn
+      mvc.perform(get("/asdf/foobar")
+            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isForbidden());
+   }
+
+   @Test
+   public void randomUrlWithAuth() throws Exception {
+      LtiAuthenticationToken token = new LtiAuthenticationToken("userId",
+            "1234", "systemId",
+            AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, "authority"),
+            "unit_test");
+      SecurityContextHolder.getContext().setAuthentication(token);
+
+      //This is a secured endpoint and should not allow access without authn
+      mvc.perform(get("/asdf/foobar")
+            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+   }
 }
