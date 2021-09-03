@@ -49,7 +49,7 @@ public class QualtricsCourseReviewFormSubmitRestService {
         }
 
         if (! tokenHeader.equals(qualtricsDocument.getToken())) {
-            log.error("The provided token {} doesn't match expected token value {}", tokenHeader, qualtricsDocument.getToken());
+            log.error("The provided token {} doesn't match the expected token value {}", tokenHeader, qualtricsDocument.getToken());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The provided token doesn't match expected token value");
         }
 

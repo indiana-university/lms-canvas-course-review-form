@@ -45,6 +45,14 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
    @Autowired
    private QualtricsService qualtricsService;
 
+   /**
+    *
+    * @param courseId Canvas numerical id like 1234
+    * @param documentId Qualtrics database id
+    * @param model
+    * @param request
+    * @return
+    */
    @RequestMapping("/index/{courseId}/{documentId}")
    @Secured(LtiAuthenticationProvider.LTI_USER_ROLE)
    public ModelAndView index(@PathVariable("courseId") String courseId, @PathVariable("documentId") String documentId,  Model model, HttpServletRequest request) {
