@@ -70,7 +70,7 @@ public class QualtricsService {
     }
 
     /**
-     * Searches a Qualtrics Document for a Qualtric course with the given canvas course id
+     * Searches a Qualtrics Document for a Qualtrics course with the given canvas course id
      * @param qualtricsDocument Document to search
      * @param courseId The canvas courseId to find
      * @return
