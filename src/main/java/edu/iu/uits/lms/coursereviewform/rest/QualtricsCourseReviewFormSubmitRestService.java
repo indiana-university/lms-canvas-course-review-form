@@ -31,7 +31,7 @@ public class QualtricsCourseReviewFormSubmitRestService {
                 qualtricsRestSubmission.getLastSubmittedBy() == null ||
                 qualtricsRestSubmission.getResponseId() == null ||
                 documentId == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing information");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing document information");
         }
 
         String tokenHeader = headers.get("x-api-token");

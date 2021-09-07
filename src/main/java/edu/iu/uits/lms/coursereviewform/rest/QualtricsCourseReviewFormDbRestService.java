@@ -29,7 +29,7 @@ public class QualtricsCourseReviewFormDbRestService {
     @PostMapping("/documents/")
     public QualtricsDocument createDocument(@RequestBody QualtricsDocument qualtricsDocument) {
         if (qualtricsDocument == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing request body");
         }
 
         return qualtricsService.saveDocument(qualtricsDocument);
@@ -40,7 +40,7 @@ public class QualtricsCourseReviewFormDbRestService {
         QualtricsDocument qualtricsUpdatedDocument = qualtricsService.getDocument(id);
 
         if (qualtricsDocument == null || qualtricsUpdatedDocument == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing request body or non existent document");
         }
 
         if (qualtricsDocument.getName() != null) {
@@ -83,7 +83,7 @@ public class QualtricsCourseReviewFormDbRestService {
         QualtricsCourse qualtricsUpdatedCourse = qualtricsService.getCourse(id);
 
         if (qualtricsUpdatedCourse == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course not found");
         }
 
         qualtricsUpdatedCourse.setOpen(false);
@@ -97,7 +97,7 @@ public class QualtricsCourseReviewFormDbRestService {
         QualtricsCourse qualtricsUpdatedCourse = qualtricsService.getCourse(id);
 
         if (qualtricsCourse == null || qualtricsUpdatedCourse == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing request body or non existent course");
         }
 
         if (qualtricsCourse.getCourseId() != null) {
@@ -144,7 +144,7 @@ public class QualtricsCourseReviewFormDbRestService {
     @PostMapping("/submissions/")
     public QualtricsSubmission createSubmission(@RequestBody QualtricsSubmission qualtricsSubmission) {
         if (qualtricsSubmission == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing request body");
         }
 
         return qualtricsService.saveSubmission(qualtricsSubmission);
@@ -155,7 +155,7 @@ public class QualtricsCourseReviewFormDbRestService {
         QualtricsSubmission qualtricsUpdatedSubmission = qualtricsService.getSubmission(id);
 
         if (qualtricsSubmission == null || qualtricsUpdatedSubmission == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing job information");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing request body or non existent submission");
         }
 
         if (qualtricsSubmission.getUserId() == null) {
