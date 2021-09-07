@@ -92,7 +92,7 @@ public class QualtricsService {
     /**
      * Return the course for a given document with the given courseId. If it doesn't exist, create one
      * using the course title as well.
-     * @param qualtricsDocument Qualtrics Docuent to search for the given canvas course id record.
+     * @param qualtricsDocument Qualtrics Document to search for the given canvas course id record.
      * @param courseId The canvas course id to search for
      * @param courseTitle The course title to use if we end up creating a new one
      * @return
