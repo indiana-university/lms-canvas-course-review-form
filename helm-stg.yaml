@@ -14,3 +14,9 @@ ingress:
   hosts:
     - host: "course-review-form-stg.apps-test.iu.edu"
       paths: []
+
+activeProfiles: "redis,stg"
+
+serviceAccountName: course-review-form-stg
+
+cluster: es-test
