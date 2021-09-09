@@ -240,7 +240,7 @@ public class AppLaunchSecurityTest {
 
       UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("https://www.iub.edu");
       uriComponentsBuilder.queryParam("Q_R", "responseId1");
-      uriComponentsBuilder.queryParam("QDEL", "1");
+      uriComponentsBuilder.queryParam("Q_R_DEL", "1");
       uriComponentsBuilder.queryParam("Q_EED", new String(Base64.encodeBase64(jsonString.getBytes())));
 
       //This is a secured endpoint and should not allow access without authn

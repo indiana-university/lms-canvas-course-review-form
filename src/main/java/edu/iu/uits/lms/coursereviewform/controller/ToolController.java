@@ -153,7 +153,7 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
                // if we have a responseId, add this to the launch URL (Base64 encoded)
                if (lastResponseId != null) {
                   uriComponentsBuilder.queryParam("Q_R", lastResponseId);
-                  uriComponentsBuilder.queryParam("QDEL", "1");
+                  uriComponentsBuilder.queryParam("Q_R_DEL", "1");
                }
 
                // Now add the every launch parameters (Base64 encoded)
