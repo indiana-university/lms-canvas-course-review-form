@@ -93,9 +93,10 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
                sortedAscendingByCreateDateUniqueLaunches = Arrays.asList(qualtricsLaunch);
             }
 
-            final String lastOpenedUserId = sortedAscendingByCreateDateUniqueLaunches.get(sortedAscendingByCreateDateUniqueLaunches.size() - 1).getUserId();
+            final QualtricsLaunch lastOpenedUser = sortedAscendingByCreateDateUniqueLaunches.get(sortedAscendingByCreateDateUniqueLaunches.size() - 1);
 
-            model.addAttribute("lastOpenedUserId", lastOpenedUserId);
+            model.addAttribute("lastOpenedUserId", lastOpenedUser.getUserId());
+            model.addAttribute("lastOpenedUserFullName", lastOpenedUser.getUserFullName());
             return new ModelAndView("inuse");
          } else { // nobody else has this document course open. Let's open it and launch
             qualtricsCourse = qualtricsService.launchCourseDocument(userId, userFullName, qualtricsCourse);
