@@ -147,7 +147,7 @@ public class QualtricsService {
                     sorted(Comparator.comparing(QualtricsLaunch::getCreatedOn)).
                     collect(Collectors.toList());
 
-            for (int i = 0; i < sortedQualtricsLaunches.size() && i < 5; i++) {
+            for (int i = 0; i < sortedQualtricsLaunches.size(); i++) {
                 QualtricsLaunch qualtricsLaunch = sortedQualtricsLaunches.get(i);
                 String userId = qualtricsLaunch.getUserId();
 
