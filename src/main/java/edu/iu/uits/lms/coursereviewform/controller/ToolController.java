@@ -85,18 +85,16 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
 
          // Does someone else have this document open?
          if (qualtricsCourse.getOpen()) {
-            List<QualtricsLaunch> sortedAscendingByCreateDateUniqueLaunches = qualtricsService.getAscendingOrderedUniqueLaunches(qualtricsCourse);
+            QualtricsLaunch lastOpenedQualtricsLaunch = qualtricsService.getLastLaunch(qualtricsCourse);
 
-            if (sortedAscendingByCreateDateUniqueLaunches == null) {
-               QualtricsLaunch qualtricsLaunch = new QualtricsLaunch();
-               qualtricsLaunch.setUserId("unknown");
-               sortedAscendingByCreateDateUniqueLaunches = Arrays.asList(qualtricsLaunch);
+            if (lastOpenedQualtricsLaunch == null) {
+               lastOpenedQualtricsLaunch = new QualtricsLaunch();
+               lastOpenedQualtricsLaunch.setUserId("none");
+               lastOpenedQualtricsLaunch.setUserFullName("None");
             }
 
-            final QualtricsLaunch lastOpenedUser = sortedAscendingByCreateDateUniqueLaunches.get(sortedAscendingByCreateDateUniqueLaunches.size() - 1);
-
-            model.addAttribute("lastOpenedUserId", lastOpenedUser.getUserId());
-            model.addAttribute("lastOpenedUserFullName", lastOpenedUser.getUserFullName());
+            model.addAttribute("lastOpenedUserId", lastOpenedQualtricsLaunch.getUserId());
+            model.addAttribute("lastOpenedUserFullName", lastOpenedQualtricsLaunch.getUserFullName());
             return new ModelAndView("inuse");
          } else { // nobody else has this document course open. Let's open it and launch
             qualtricsCourse = qualtricsService.launchCourseDocument(userId, userFullName, qualtricsCourse);
