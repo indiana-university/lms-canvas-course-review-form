@@ -162,6 +162,42 @@ public class QualtricsServiceTest {
     }
 
     @Test
+    public void getMostRecentLaunchTest() throws InterruptedException {
+        QualtricsCourse qualtricsCourse1 = new QualtricsCourse();
+
+        List<QualtricsLaunch> qualtricsLaunches = new ArrayList<>();
+
+        QualtricsLaunch qualtricsLaunch1 = new QualtricsLaunch();
+        qualtricsLaunch1.setId(1L);
+        qualtricsLaunch1.setUserId("user1");
+        qualtricsLaunch1.setCreatedOn(new Date());
+        qualtricsLaunches.add(qualtricsLaunch1);
+
+        Thread.sleep(1000);
+
+        QualtricsLaunch qualtricsLaunch2 = new QualtricsLaunch();
+        qualtricsLaunch2.setId(2L);
+        qualtricsLaunch2.setUserId("user2");
+        qualtricsLaunch2.setCreatedOn(new Date());
+        qualtricsLaunches.add(qualtricsLaunch2);
+
+        Thread.sleep(1000);
+
+        QualtricsLaunch qualtricsLaunch3 = new QualtricsLaunch();
+        qualtricsLaunch3.setId(3L);
+        qualtricsLaunch3.setUserId("user1");
+        qualtricsLaunch3.setCreatedOn(new Date());
+        qualtricsLaunches.add(qualtricsLaunch3);
+
+        qualtricsCourse1.setQualtricsLaunches(qualtricsLaunches);
+
+        QualtricsLaunch foundQualtricsLaunch = qualtricsService.getLastLaunch(qualtricsCourse1);
+
+        Assert.assertNotNull(foundQualtricsLaunch);
+        Assert.assertEquals(Long.valueOf(3), foundQualtricsLaunch.getId());
+    }
+
+    @Test
     public void getMostRecentSubmissionTest() throws InterruptedException {
         QualtricsCourse qualtricsCourse1 = new QualtricsCourse();
 

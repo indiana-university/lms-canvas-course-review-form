@@ -130,6 +130,25 @@ public class QualtricsService {
     }
 
     /**
+     * Returns the last QualtricsLaunch for the given Qualtrics Course
+     * @param qualtricsCourse The course to grab the Qualtrics Launches
+     * @return THe most recent Qualtrics Launch
+     */
+    public QualtricsLaunch getLastLaunch(@NonNull QualtricsCourse qualtricsCourse) {
+        List<QualtricsLaunch> sortedDescendingOrderQualtricsLaunches = qualtricsCourse.getQualtricsLaunches();
+
+        if (sortedDescendingOrderQualtricsLaunches != null && ! sortedDescendingOrderQualtricsLaunches.isEmpty()) {
+            sortedDescendingOrderQualtricsLaunches = sortedDescendingOrderQualtricsLaunches.stream().
+                    sorted(Comparator.comparing(QualtricsLaunch::getCreatedOn).reversed()).
+                    collect(Collectors.toList());
+
+            return sortedDescendingOrderQualtricsLaunches.get(0);
+        }
+
+        return null;
+    }
+
+    /**
      * Return a list of Qualtrics Launches sorted in ascending order by createdOn date
      * of only giving unique lanuches (userIds)
      * @param qualtricsCourse The course to grab the Qualtrics Launches
