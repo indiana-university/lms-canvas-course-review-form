@@ -1,6 +1,8 @@
 package edu.iu.uits.lms.coursereviewform.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import edu.iu.uits.lms.common.date.DateFormatUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -42,6 +44,7 @@ public class QualtricsLaunch implements Serializable {
     private String userFullName;
 
     @Column(name = "CREATED_ON")
+    @JsonFormat(pattern = DateFormatUtil.JSON_DATE_FORMAT)
     private Date createdOn;
 
     @PreUpdate
