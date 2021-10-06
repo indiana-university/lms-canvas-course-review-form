@@ -139,7 +139,7 @@ public class AppLaunchSecurityTest {
       String jsonString = gson.toJson(jsonParameters);
 
       UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("https://www.iub.edu");
-      uriComponentsBuilder.queryParam("Q_EED", new String(Base64.encodeBase64(jsonString.getBytes())));
+      uriComponentsBuilder.queryParam("Q_EED", Base64.encodeBase64URLSafeString(jsonString.getBytes()));
 
       //This is a secured endpoint and should not allow access without authn
       mvc.perform(get("/app/index/1234/1")
@@ -241,7 +241,7 @@ public class AppLaunchSecurityTest {
       UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("https://www.iub.edu");
       uriComponentsBuilder.queryParam("Q_R", "responseId1");
       uriComponentsBuilder.queryParam("Q_R_DEL", "1");
-      uriComponentsBuilder.queryParam("Q_EED", new String(Base64.encodeBase64(jsonString.getBytes())));
+      uriComponentsBuilder.queryParam("Q_EED", Base64.encodeBase64URLSafeString(jsonString.getBytes()));
 
       //This is a secured endpoint and should not allow access without authn
       mvc.perform(get("/app/index/1234/1")

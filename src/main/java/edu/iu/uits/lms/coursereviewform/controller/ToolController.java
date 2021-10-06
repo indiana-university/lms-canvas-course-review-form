@@ -156,7 +156,7 @@ public class ToolController extends LtiAuthenticationTokenAwareController {
                }
 
                // Now add the every launch parameters (Base64 encoded)
-               uriComponentsBuilder.queryParam("Q_EED", new String(Base64.encodeBase64(jsonString.getBytes())));
+               uriComponentsBuilder.queryParam("Q_EED", Base64.encodeBase64URLSafeString(jsonString.getBytes()));
 
                // launch the qualtrics document w/ all the generated parameters
                return new ModelAndView("redirect:" + uriComponentsBuilder.toUriString());
