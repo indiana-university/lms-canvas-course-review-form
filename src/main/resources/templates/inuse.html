@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Course Review Form - In Use</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="rvt-m-tb-md">
+            <h1 class="rvt-ts-32 rvt-p-tb-xs">Try again later</h1>
+            <div>The review form for this course is currently in use by <span th:text="${lastOpenedUserFullName}" /> (<span th:text="${lastOpenedUserId}"/>).  Please try again later.</div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 
 projectedSecret:
   - secret:
-      name: "properties-2021-05-10"
+      name: "properties-2021-06-07"
 
 image:
   tag: unstable-snd
@@ -12,5 +12,11 @@ env:
 ingress:
   enabled: true
   hosts:
-    - host: "microservices-template-snd.apps-snd.iu.edu"
+    - host: "course-review-form-snd.apps-snd.iu.edu"
       paths: []
+
+activeProfiles: "redis,snd"
+
+serviceAccountName: course-review-form-snd
+
+cluster: es-test

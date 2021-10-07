@@ -1,12 +1,12 @@
-package edu.iu.uits.lms.microservicestemplate.controller;
+package edu.iu.uits.lms.coursereviewform.controller;
 
-import canvas.helpers.CanvasConstants;
-import edu.iu.uits.lms.lti.LTIConstants;
+import edu.iu.uits.lms.common.session.CourseSessionService;
 import edu.iu.uits.lms.lti.controller.LtiController;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
 import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -18,20 +18,25 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Controller
 @RequestMapping({"/lti"})
 @Slf4j
-public class MicroservicesTemplateLtiController extends LtiController {
+public class CourseReviewFormLtiController extends LtiController {
+    @Autowired
+    private CourseSessionService courseSessionService;
 
     private boolean openLaunchUrlInNewWindow = false;
+
+    public static final String CUSTOM_DOCUMENT_ID = "custom_document_id";
 
     @Override
     protected String getLaunchUrl(Map<String, String> launchParams) {
         String courseId = launchParams.get(CUSTOM_CANVAS_COURSE_ID);
-        return "/app/index/" + courseId;
+        String documentId = launchParams.get(CUSTOM_DOCUMENT_ID);
+
+        return "/app/index/" + courseId + "/" + documentId;
     }
 
     @Override
@@ -44,6 +49,9 @@ public class MicroservicesTemplateLtiController extends LtiController {
         paramMap.put(BasicLTIConstants.CONTEXT_TITLE, payload.get(BasicLTIConstants.CONTEXT_TITLE));
         paramMap.put(BasicLTIConstants.LIS_PERSON_CONTACT_EMAIL_PRIMARY, payload.get(BasicLTIConstants.LIS_PERSON_CONTACT_EMAIL_PRIMARY));
         paramMap.put(BasicLTIConstants.LIS_PERSON_SOURCEDID, payload.get(BasicLTIConstants.LIS_PERSON_SOURCEDID));
+        paramMap.put(BasicLTIConstants.LIS_PERSON_NAME_FULL, payload.get(BasicLTIConstants.LIS_PERSON_NAME_FULL));
+
+        paramMap.put(CUSTOM_DOCUMENT_ID, payload.get(CUSTOM_DOCUMENT_ID));
 
         openLaunchUrlInNewWindow = Boolean.valueOf(payload.get(CUSTOM_OPEN_IN_NEW_WINDOW));
 
@@ -58,16 +66,15 @@ public class MicroservicesTemplateLtiController extends LtiController {
         log.debug("LTI equivalent authority: " + authority);
 
         String userId = launchParams.get(CUSTOM_CANVAS_USER_LOGIN_ID);
-        String userEmail = launchParams.get(BasicLTIConstants.LIS_PERSON_CONTACT_EMAIL_PRIMARY);
-        String userSisId = launchParams.get(BasicLTIConstants.LIS_PERSON_SOURCEDID);
+        String userFullName = launchParams.get(BasicLTIConstants.LIS_PERSON_NAME_FULL);
         String systemId = launchParams.get(BasicLTIConstants.TOOL_CONSUMER_INSTANCE_GUID);
         String courseId = launchParams.get(CUSTOM_CANVAS_COURSE_ID);
         String courseTitle = launchParams.get(BasicLTIConstants.CONTEXT_TITLE);
 
         HttpSession session = request.getSession();
-//        session.setAttribute(Constants.COURSE_TITLE_KEY, courseTitle);
-//        session.setAttribute(Constants.USER_EMAIL_KEY, userEmail);
-//        session.setAttribute(Constants.USER_SIS_ID_KEY, userSisId);
+
+        courseSessionService.addAttributeToSession(session, courseId, BasicLTIConstants.LIS_PERSON_NAME_FULL, userFullName);
+        courseSessionService.addAttributeToSession(session, courseId, BasicLTIConstants.CONTEXT_TITLE, courseTitle);
 
         LtiAuthenticationToken token = new LtiAuthenticationToken(userId,
                 courseId, systemId, AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, authority), getToolContext());
@@ -76,7 +83,7 @@ public class MicroservicesTemplateLtiController extends LtiController {
 
     @Override
     protected String getToolContext() {
-        return "microservices-template";
+        return "course-review-form";
     }
 
     @Override
@@ -85,34 +92,5 @@ public class MicroservicesTemplateLtiController extends LtiController {
             return LAUNCH_MODE.WINDOW;
 
         return LAUNCH_MODE.FORWARD;
-    }
-
-    /**
-     * Given a list of user roles, return the internal equivalent role
-     * @param userRoles
-     * @param instructorRoles
-     * @return
-     */
-    @Override
-    protected String returnEquivalentAuthority(List<String> userRoles, List<String> instructorRoles) {
-        for (String instructorRole : instructorRoles) {
-            if (userRoles.contains(instructorRole)) {
-                return LTIConstants.INSTRUCTOR_AUTHORITY;
-            }
-        }
-
-        if (userRoles.contains(CanvasConstants.TA_ROLE)) {
-            return LTIConstants.TA_AUTHORITY;
-        }
-
-        if (userRoles.contains(CanvasConstants.DESIGNER_ROLE)) {
-            return LTIConstants.DESIGNER_AUTHORITY;
-        }
-
-        if (userRoles.contains(CanvasConstants.OBSERVER_ROLE)) {
-            return LTIConstants.OBSERVER_AUTHORITY;
-        }
-
-        return LTIConstants.STUDENT_AUTHORITY;
     }
 }

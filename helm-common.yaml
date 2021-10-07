@@ -1,9 +1,9 @@
-nameOverride: microservices-template
+nameOverride: course-review-form
 
 namespace: ua-vpit--enterprise-systems--lms
 
 image:
-  repository: registry.docker.iu.edu/lms/microservices-template
+  repository: registry.docker.iu.edu/lms/course-review-form
   tag: unstable
   pullPolicy: Always
 
@@ -25,7 +25,10 @@ imagePullSecrets:
 
 javaOpts: "-XX:MaxRAMPercentage=90 -XshowSettings:vm"
 
-activeProfiles: "redis"
+activeProfiles: "none"
+
+vault:
+  enabled: true
 
 service:
   type: ClusterIP
