@@ -119,27 +119,27 @@ public class AppLaunchSecurityTest {
 //
 //      Mockito.when(courseSessionService.getAttributeFromSession(any(HttpSession.class), any(), eq(BasicLTIConstants.LIS_PERSON_NAME_FULL), eq(String.class))).thenReturn("User Fullname");
 //      Mockito.when(courseSessionService.getAttributeFromSession(any(HttpSession.class), any(), eq(BasicLTIConstants.CONTEXT_TITLE), eq(String.class))).thenReturn("Test course name");
-
-      JsonParameters jsonParameters = new JsonParameters();
-      jsonParameters.setCourseId("1234");
-      jsonParameters.setCourseTitle("Test course name");
-      jsonParameters.setLastOpenedBy("userId");
-      jsonParameters.setUserId1("userId");
-      jsonParameters.setUserId1Name("User Fullname");
-
-      Gson gson = new Gson();
-      String jsonString = gson.toJson(jsonParameters);
-
-      UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("https://www.iub.edu");
-      uriComponentsBuilder.queryParam("Q_EED", Base64.encodeBase64URLSafeString(jsonString.getBytes()));
-
-      //This is a secured endpoint and should not allow access without authn
-      mvc.perform(get("/app/index/1234/1")
-            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl(uriComponentsBuilder.toUriString()));
-   }
+//
+//      JsonParameters jsonParameters = new JsonParameters();
+//      jsonParameters.setCourseId("1234");
+//      jsonParameters.setCourseTitle("Test course name");
+//      jsonParameters.setLastOpenedBy("userId");
+//      jsonParameters.setUserId1("userId");
+//      jsonParameters.setUserId1Name("User Fullname");
+//
+//      Gson gson = new Gson();
+//      String jsonString = gson.toJson(jsonParameters);
+//
+//      UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("https://www.iub.edu");
+//      uriComponentsBuilder.queryParam("Q_EED", Base64.encodeBase64URLSafeString(jsonString.getBytes()));
+//
+//      //This is a secured endpoint and should not allow access without authn
+//      mvc.perform(get("/app/index/1234/1")
+//            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+//            .contentType(MediaType.APPLICATION_JSON))
+//            .andExpect(status().is3xxRedirection())
+//            .andExpect(redirectedUrl(uriComponentsBuilder.toUriString()));
+//   }
 //
 //   @Test
 //   public void appAuthnVerifyLast5LaunchesLaunch() throws Exception {
