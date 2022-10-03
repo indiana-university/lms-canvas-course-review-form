@@ -63,6 +63,7 @@ public class SecurityConfig {
                     .antMatchers(WELL_KNOWN_ALL, "/app/**")
                     .and()
                     .authorizeRequests()
+                    .antMatchers(WELL_KNOWN_ALL).permitAll()
                     .antMatchers("/**").hasRole(BASE_USER_ROLE);
 
             // Set up the LTI handshake
