@@ -38,10 +38,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class QualtricsRestSubmission {
+public class QualtricsRestSubmission implements Serializable {
     @JsonProperty("course_id")
     private String courseId;
 

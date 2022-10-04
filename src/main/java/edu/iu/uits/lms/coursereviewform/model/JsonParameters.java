@@ -37,9 +37,11 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
 @Data
-public class JsonParameters {
+public class JsonParameters implements Serializable {
     @SerializedName("course_id")
     String courseId;
 
