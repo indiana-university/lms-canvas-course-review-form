@@ -37,7 +37,6 @@ import edu.iu.uits.lms.common.samesite.EnableCookieFilter;
 import edu.iu.uits.lms.common.server.GitRepositoryState;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.server.ServerUtils;
-import edu.iu.uits.lms.common.session.EnableCourseSessionService;
 import edu.iu.uits.lms.lti.config.EnableGlobalErrorHandler;
 import edu.iu.uits.lms.lti.config.EnableLtiClient;
 import edu.iu.uits.lms.coursereviewform.config.ToolConfig;
@@ -48,7 +47,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.PropertySource;
 
 import java.util.Date;
 
@@ -59,7 +57,6 @@ import java.util.Date;
 @EnableCookieFilter(ignoredRequestPatterns = {"/rest/**"})
 @EnableLtiClient(toolKeys = {"course-review-form"})
 @EnableConfigurationProperties(GitRepositoryState.class)
-@EnableCourseSessionService(sessionKey = "course_review_form_course_session")
 public class WebApplication {
 
     @Autowired

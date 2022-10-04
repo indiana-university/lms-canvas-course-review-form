@@ -35,7 +35,6 @@ package edu.iu.uits.lms.coursereviewform.services;
 
 import com.google.gson.Gson;
 import com.nimbusds.jose.shaded.json.JSONObject;
-import edu.iu.uits.lms.common.session.CourseSessionService;
 import edu.iu.uits.lms.coursereviewform.model.JsonParameters;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsCourse;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsDocument;
@@ -48,7 +47,6 @@ import edu.iu.uits.lms.coursereviewform.config.ToolConfig;
 import edu.iu.uits.lms.coursereviewform.controller.ToolController;
 import edu.iu.uits.lms.lti.config.TestUtils;
 import org.apache.commons.codec.binary.Base64;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,10 +55,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -68,7 +63,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ox.ctl.lti13.lti.Claims;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -85,22 +79,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(value = ToolController.class, properties = {"oauth.tokenprovider.url=http://foo"})
 @Import({ToolConfig.class, LtiClientTestConfig.class})
-//@RunWith(SpringRunner.class)
-//@WebMvcTest(ToolController.class)
-//@Import(ToolConfig.class)
-//@ActiveProfiles("none")
 public class AppLaunchSecurityTest {
    @Autowired
    private MockMvc mvc;
 
    @MockBean
    private QualtricsService qualtricsService;
-
-//   @BeforeEach
-//   public void init() throws InterruptedException {
-//      Mockito.when(courseSessionService.getAttributeFromSession(any(HttpSession.class), any(), eq(BasicLTIConstants.LIS_PERSON_NAME_FULL), eq(String.class))).thenReturn("User Fullname");
-//      Mockito.when(courseSessionService.getAttributeFromSession(any(HttpSession.class), any(), eq(BasicLTIConstants.CONTEXT_TITLE), eq(String.class))).thenReturn("Test course name");
-//   }
 
    @Test
    public void appNoAuthnLaunch() throws Exception {
@@ -153,9 +137,6 @@ public class AppLaunchSecurityTest {
       Mockito.when(qualtricsService.createOrGetExistingCourse(eq(qualtricsDocument), eq("1234"), any(String.class))).thenReturn(qualtricsCourse);
       Mockito.when(qualtricsService.launchCourseDocument(any(), any(), eq(qualtricsCourse))).thenReturn(qualtricsCourse);
       Mockito.when(qualtricsService.getAscendingOrderedUniqueLaunches(qualtricsCourse)).thenReturn(Arrays.asList(qualtricsLaunch));
-
-//      Mockito.when(courseSessionService.getAttributeFromSession(any(HttpSession.class), any(), eq(BasicLTIConstants.LIS_PERSON_NAME_FULL), eq(String.class))).thenReturn("User Fullname");
-//      Mockito.when(courseSessionService.getAttributeFromSession(any(HttpSession.class), any(), eq(BasicLTIConstants.CONTEXT_TITLE), eq(String.class))).thenReturn("Test course name");
 
       JsonParameters jsonParameters = new JsonParameters();
       jsonParameters.setCourseId("1234");
