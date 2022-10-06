@@ -1,5 +1,5 @@
 # course-review-form
-LTI tool for managing content within the course hierarchy, such as course templates and syllabus supplements
+LTI tool for integrating with Qualtrics surveys.
 
 ## Running standalone
 Add env vars or system properties as desired.
@@ -14,9 +14,11 @@ Add env vars or system properties as desired.
 
 ## Setup Database
 After compiling, see `target/generated-resources/sql/ddl/auto/postgresql9.sql` for appropriate ddl.
-Insert records into the `LTI_13_AUTHZ` table for each tool's registration_id (`"lms_lti_hrm_apply`, `lms_lti_hrm_manager`, `lms_lti_hrm_reapply`), along with the matching client_id
+Insert records into the `LTI_13_AUTHZ` table for the tool's registration_id (`"course-review-form`), along with the matching client_id
 and secret from Canvas's Developer Keys.  An `env` designator is also required here, and allows a database to support
 multiple environments simultaneously (dev and reg, for example).
+
+One will need to create a record in the table `QUALTRICS_DOCUMENT`.
 
 ## Test a local launch
 Startup the application with the `LTI_CLIENTREGISTRATION_DEFAULTCLIENT` value set to `saltire`.
@@ -38,15 +40,15 @@ document_id=1
 </td></tr>
 </table>
 
-Use an appropriate `canvas_course_id` and `canvas_user_login_id`.
+Use an appropriate `canvas_course_id`, `canvas_user_login_id`, and `document_id`.
 
 From the `Security Model` section, set the following:
 <table>
 <tr><th>Property</th><th>Value</th></tr>
 <tr><td>LTI version</td><td>1.3.0</td></tr>
-<tr><td>Message URL</td><td>http://localhost:8080/app/manager</td></tr>
+<tr><td>Message URL</td><td>http://localhost:8080/app/launch</td></tr>
 <tr><td>Client ID</td><td>dev (or whatever is appropriate based on the record inserted in the database table from above)</td></tr>
-<tr><td>Initiate login URL</td><td>http://localhost:8080/lti/login_initiation/lms_lti_hrm_manager</td></tr>
+<tr><td>Initiate login URL</td><td>http://localhost:8080/lti/login_initiation/course-review-form</td></tr>
 <tr><td>Redirection URI(s)</td><td>http://localhost:8080/lti/login</td></tr>
 </table>
 

@@ -1,6 +1,6 @@
 {
   "title": "QM Advantage",
-  "description": "LTI tool for managing certain LTI tool placements",
+  "description": "LTI tool for integrating with Qualtrics surveys",
   "oidc_initiation_url": "http://localhost:8080/lti/login_initiation/course-review-form",
   "target_link_uri": "http://localhost:8080/app/launch",
   "extensions": [
@@ -24,6 +24,7 @@
   "custom_fields": {
     "canvas_membership_roles": "$Canvas.membership.roles",
     "canvas_course_id": "$Canvas.course.id",
-    "canvas_user_login_id": "$Canvas.user.loginId"
+    "canvas_user_login_id": "$Canvas.user.loginId",
+    "document_id": "1"
   }
 }
