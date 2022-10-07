@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.coursereviewform.model;
+package edu.iu.uits.lms.coursereviewform.services.swagger;
 
 /*-
  * #%L
@@ -33,23 +33,12 @@ package edu.iu.uits.lms.coursereviewform.model;
  * #L%
  */
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.io.Serializable;
-
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class QualtricsRestSubmission implements Serializable {
-    @JsonProperty("course_id")
-    private String courseId;
-
-    @JsonProperty("response_id")
-    private String responseId;
-
-    @JsonProperty("last_submitted_by")
-    private String lastSubmittedBy;
+public class SwaggerTestUtil {
+   protected static  List<String> getEmbeddedSwaggerToolPaths(List<String> baseList) {
+      List<String> expandedList = new ArrayList<>(baseList);
+      return expandedList;
+   }
 }

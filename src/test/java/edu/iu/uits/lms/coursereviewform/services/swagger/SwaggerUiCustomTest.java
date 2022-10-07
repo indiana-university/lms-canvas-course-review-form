@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.coursereviewform.model;
+package edu.iu.uits.lms.coursereviewform.services.swagger;
 
 /*-
  * #%L
@@ -33,23 +33,18 @@ package edu.iu.uits.lms.coursereviewform.model;
  * #L%
  */
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import edu.iu.uits.lms.coursereviewform.WebApplication;
+import edu.iu.uits.lms.coursereviewform.config.SecurityConfig;
+import edu.iu.uits.lms.lti.swagger.AbstractSwaggerUiCustomTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.Serializable;
+import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public class QualtricsRestSubmission implements Serializable {
-    @JsonProperty("course_id")
-    private String courseId;
+@SpringBootTest(classes = {WebApplication.class, SecurityConfig.class})
+public class SwaggerUiCustomTest extends AbstractSwaggerUiCustomTest {
 
-    @JsonProperty("response_id")
-    private String responseId;
-
-    @JsonProperty("last_submitted_by")
-    private String lastSubmittedBy;
+   @Override
+   protected List<String> getEmbeddedSwaggerToolPaths() {
+      return SwaggerTestUtil.getEmbeddedSwaggerToolPaths(super.getEmbeddedSwaggerToolPaths());
+   }
 }

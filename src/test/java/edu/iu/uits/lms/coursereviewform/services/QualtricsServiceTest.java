@@ -1,5 +1,38 @@
 package edu.iu.uits.lms.coursereviewform.services;
 
+/*-
+ * #%L
+ * course-review-form
+ * %%
+ * Copyright (C) 2015 - 2022 Indiana University
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the Indiana University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
 import edu.iu.uits.lms.coursereviewform.model.QualtricsCourse;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsDocument;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsLaunch;
@@ -9,35 +42,39 @@ import edu.iu.uits.lms.coursereviewform.repository.QualtricsDocumentRepository;
 import edu.iu.uits.lms.coursereviewform.repository.QualtricsLaunchRepository;
 import edu.iu.uits.lms.coursereviewform.repository.QualtricsSubmissionRepository;
 import edu.iu.uits.lms.coursereviewform.service.QualtricsService;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 
-@RunWith(MockitoJUnitRunner.class)
+@ContextConfiguration(classes={QualtricsService.class})
+@SpringBootTest
+@Slf4j
 public class QualtricsServiceTest {
-    @InjectMocks
+
+    @Autowired
     private QualtricsService qualtricsService;
 
-    @Mock
+    @MockBean
     private QualtricsDocumentRepository qualtricsDocumentRepository;
 
-    @Mock
+    @MockBean
     private QualtricsCourseRepository qualtricsCourseRepository;
 
-    @Mock
+    @MockBean
     private QualtricsLaunchRepository qualtricsLaunchRepository;
 
-    @Mock
+    @MockBean
     private QualtricsSubmissionRepository qualtricsSubmissionRepository;
 
     @Test
@@ -75,19 +112,19 @@ public class QualtricsServiceTest {
         QualtricsCourse foundCourse = null;
 
         foundCourse = qualtricsService.getCourse(qualtricsDocument, "0000");
-        Assert.assertNull(foundCourse);
+        Assertions.assertNull(foundCourse);
 
         foundCourse = qualtricsService.getCourse(qualtricsDocument, "1234");
-        Assert.assertNotNull(foundCourse);
-        Assert.assertEquals("1234", foundCourse.getCourseId());
+        Assertions.assertNotNull(foundCourse);
+        Assertions.assertEquals("1234", foundCourse.getCourseId());
 
         foundCourse = qualtricsService.getCourse(qualtricsDocument, "5678");
-        Assert.assertNotNull(foundCourse);
-        Assert.assertEquals("5678", foundCourse.getCourseId());
+        Assertions.assertNotNull(foundCourse);
+        Assertions.assertEquals("5678", foundCourse.getCourseId());
 
         foundCourse = qualtricsService.getCourse(qualtricsDocument, "9012");
-        Assert.assertNotNull(foundCourse);
-        Assert.assertEquals("9012", foundCourse.getCourseId());
+        Assertions.assertNotNull(foundCourse);
+        Assertions.assertEquals("9012", foundCourse.getCourseId());
     }
 
     @Test
@@ -133,11 +170,11 @@ public class QualtricsServiceTest {
 
         List<QualtricsLaunch> foundQualtricsLaunches = qualtricsService.getAscendingOrderedUniqueLaunches(qualtricsCourse1);
 
-        Assert.assertNotNull(foundQualtricsLaunches);
-        Assert.assertEquals(2, foundQualtricsLaunches.size());
+        Assertions.assertNotNull(foundQualtricsLaunches);
+        Assertions.assertEquals(2, foundQualtricsLaunches.size());
 
-        Assert.assertEquals(Long.valueOf(1), foundQualtricsLaunches.get(0).getId());
-        Assert.assertEquals(Long.valueOf(3), foundQualtricsLaunches.get(1).getId());
+        Assertions.assertEquals(Long.valueOf(1), foundQualtricsLaunches.get(0).getId());
+        Assertions.assertEquals(Long.valueOf(3), foundQualtricsLaunches.get(1).getId());
     }
 
     @Test
@@ -149,10 +186,10 @@ public class QualtricsServiceTest {
 
         QualtricsCourse returnedQualtricsCourse = qualtricsService.launchCourseDocument("userId", "User Name", qualtricsCourse1);
 
-        Assert.assertNotNull(returnedQualtricsCourse);
-        Assert.assertNotNull(returnedQualtricsCourse.getQualtricsLaunches());
-        Assert.assertEquals(1, returnedQualtricsCourse.getQualtricsLaunches().size());
-        Assert.assertEquals(true, returnedQualtricsCourse.getOpen());
+        Assertions.assertNotNull(returnedQualtricsCourse);
+        Assertions.assertNotNull(returnedQualtricsCourse.getQualtricsLaunches());
+        Assertions.assertEquals(1, returnedQualtricsCourse.getQualtricsLaunches().size());
+        Assertions.assertEquals(true, returnedQualtricsCourse.getOpen());
 
     }
 
@@ -186,8 +223,8 @@ public class QualtricsServiceTest {
 
         QualtricsLaunch foundQualtricsLaunch = qualtricsService.getLastLaunch(qualtricsCourse1);
 
-        Assert.assertNotNull(foundQualtricsLaunch);
-        Assert.assertEquals(Long.valueOf(3), foundQualtricsLaunch.getId());
+        Assertions.assertNotNull(foundQualtricsLaunch);
+        Assertions.assertEquals(Long.valueOf(3), foundQualtricsLaunch.getId());
     }
 
     @Test
@@ -217,7 +254,7 @@ public class QualtricsServiceTest {
 
         QualtricsSubmission foundQualtricsSubmission = qualtricsService.getMostRecentSubmission(qualtricsCourse1);
 
-        Assert.assertNotNull(foundQualtricsSubmission);
-        Assert.assertEquals(Long.valueOf(3), foundQualtricsSubmission.getId());
+        Assertions.assertNotNull(foundQualtricsSubmission);
+        Assertions.assertEquals(Long.valueOf(3), foundQualtricsSubmission.getId());
     }
 }

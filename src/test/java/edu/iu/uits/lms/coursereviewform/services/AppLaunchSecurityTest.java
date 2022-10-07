@@ -1,21 +1,53 @@
 package edu.iu.uits.lms.coursereviewform.services;
 
+/*-
+ * #%L
+ * course-review-form
+ * %%
+ * Copyright (C) 2015 - 2022 Indiana University
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the Indiana University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
 import com.google.gson.Gson;
-import edu.iu.uits.lms.common.session.CourseSessionService;
+import com.nimbusds.jose.shaded.json.JSONObject;
 import edu.iu.uits.lms.coursereviewform.model.JsonParameters;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsCourse;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsDocument;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsLaunch;
 import edu.iu.uits.lms.coursereviewform.model.QualtricsSubmission;
 import edu.iu.uits.lms.coursereviewform.service.QualtricsService;
-import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
-import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
+import edu.iu.uits.lms.lti.LTIConstants;
+import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import edu.iu.uits.lms.coursereviewform.config.ToolConfig;
 import edu.iu.uits.lms.coursereviewform.controller.ToolController;
+import edu.iu.uits.lms.lti.config.TestUtils;
 import org.apache.commons.codec.binary.Base64;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,21 +55,20 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.tsugi.basiclti.BasicLTIConstants;
+import uk.ac.ox.ctl.lti13.lti.Claims;
+import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -46,42 +77,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(ToolController.class)
-@Import(ToolConfig.class)
-@ActiveProfiles("none")
+@WebMvcTest(value = ToolController.class, properties = {"oauth.tokenprovider.url=http://foo"})
+@Import({ToolConfig.class, LtiClientTestConfig.class})
 public class AppLaunchSecurityTest {
-
    @Autowired
    private MockMvc mvc;
 
    @MockBean
-   private CourseSessionService courseSessionService;
-
-   @MockBean
    private QualtricsService qualtricsService;
-
-   @Before
-   public void init() throws InterruptedException {
-      Mockito.when(courseSessionService.getAttributeFromSession(any(HttpSession.class), any(), eq(BasicLTIConstants.LIS_PERSON_NAME_FULL), eq(String.class))).thenReturn("User Fullname");
-      Mockito.when(courseSessionService.getAttributeFromSession(any(HttpSession.class), any(), eq(BasicLTIConstants.CONTEXT_TITLE), eq(String.class))).thenReturn("Test course name");
-   }
 
    @Test
    public void appNoAuthnLaunch() throws Exception {
       //This is a secured endpoint and should not allow access without authn
       mvc.perform(get("/app/index/1234/1")
-            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isForbidden());
+                      .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+                      .contentType(MediaType.APPLICATION_JSON))
+              .andExpect(status().isForbidden());
    }
 
    @Test
    public void appAuthnWrongContextLaunch() throws Exception {
-      LtiAuthenticationToken token = new LtiAuthenticationToken("userId",
-            "asdf", "systemId",
-            AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, "authority"),
-            "unit_test");
+      OidcAuthenticationToken token = buildTokenForUnitTests("5678");
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
@@ -91,16 +107,13 @@ public class AppLaunchSecurityTest {
               .contentType(MediaType.APPLICATION_JSON));
 
       mockMvcAction.andExpect(status().isInternalServerError());
-      mockMvcAction.andExpect(MockMvcResultMatchers.view().name ("error"));
+      mockMvcAction.andExpect(MockMvcResultMatchers.view().name("error"));
       mockMvcAction.andExpect(MockMvcResultMatchers.model().attributeExists("error"));
    }
 
    @Test
    public void appAuthnFirstLaunch() throws Exception {
-      LtiAuthenticationToken token = new LtiAuthenticationToken("userId",
-            "1234", "systemId",
-            AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, "authority"),
-            "unit_test");
+      OidcAuthenticationToken token = buildTokenForUnitTests("1234");
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
@@ -115,7 +128,7 @@ public class AppLaunchSecurityTest {
       qualtricsCourse.setOpen(false);
 
       QualtricsLaunch qualtricsLaunch = new QualtricsLaunch();
-      qualtricsLaunch.setUserId("userId");
+      qualtricsLaunch.setUserId("theUserLoginId");
       qualtricsLaunch.setUserFullName("User Fullname");
 
       qualtricsDocument.setQualtricsCourses(Arrays.asList(qualtricsCourse));
@@ -125,14 +138,11 @@ public class AppLaunchSecurityTest {
       Mockito.when(qualtricsService.launchCourseDocument(any(), any(), eq(qualtricsCourse))).thenReturn(qualtricsCourse);
       Mockito.when(qualtricsService.getAscendingOrderedUniqueLaunches(qualtricsCourse)).thenReturn(Arrays.asList(qualtricsLaunch));
 
-      Mockito.when(courseSessionService.getAttributeFromSession(any(HttpSession.class), any(), eq(BasicLTIConstants.LIS_PERSON_NAME_FULL), eq(String.class))).thenReturn("User Fullname");
-      Mockito.when(courseSessionService.getAttributeFromSession(any(HttpSession.class), any(), eq(BasicLTIConstants.CONTEXT_TITLE), eq(String.class))).thenReturn("Test course name");
-
       JsonParameters jsonParameters = new JsonParameters();
       jsonParameters.setCourseId("1234");
       jsonParameters.setCourseTitle("Test course name");
-      jsonParameters.setLastOpenedBy("userId");
-      jsonParameters.setUserId1("userId");
+      jsonParameters.setLastOpenedBy("theUserLoginId");
+      jsonParameters.setUserId1("theUserLoginId");
       jsonParameters.setUserId1Name("User Fullname");
 
       Gson gson = new Gson();
@@ -143,18 +153,15 @@ public class AppLaunchSecurityTest {
 
       //This is a secured endpoint and should not allow access without authn
       mvc.perform(get("/app/index/1234/1")
-            .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl(uriComponentsBuilder.toUriString()));
+                      .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+                      .contentType(MediaType.APPLICATION_JSON))
+              .andExpect(status().is3xxRedirection())
+              .andExpect(redirectedUrl(uriComponentsBuilder.toUriString()));
    }
 
    @Test
    public void appAuthnVerifyLast5LaunchesLaunch() throws Exception {
-      LtiAuthenticationToken token = new LtiAuthenticationToken("userId",
-              "1234", "systemId",
-              AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, "authority"),
-              "unit_test");
+      OidcAuthenticationToken token = buildTokenForUnitTests("1234");
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
@@ -199,7 +206,7 @@ public class AppLaunchSecurityTest {
       qualtricsLaunches.add(qualtricsLaunch4);
 
       QualtricsLaunch qualtricsLaunch5 = new QualtricsLaunch();
-      qualtricsLaunch5.setUserId("userId");
+      qualtricsLaunch5.setUserId("theUserLoginId");
       qualtricsLaunch5.setUserFullName("User Fullname");
       qualtricsLaunch5.setCreatedOn(new Date());
 
@@ -223,7 +230,7 @@ public class AppLaunchSecurityTest {
       JsonParameters jsonParameters = new JsonParameters();
       jsonParameters.setCourseId("1234");
       jsonParameters.setCourseTitle("Test course name");
-      jsonParameters.setLastOpenedBy("userId");
+      jsonParameters.setLastOpenedBy("theUserLoginId");
       jsonParameters.setUserId1("user1");
       jsonParameters.setUserId1Name("User Fullname");
       jsonParameters.setUserId2("user2");
@@ -232,7 +239,7 @@ public class AppLaunchSecurityTest {
       jsonParameters.setUserId3Name("User Fullname");
       jsonParameters.setUserId4("user4");
       jsonParameters.setUserId4Name("User Fullname");
-      jsonParameters.setUserId5("userId");
+      jsonParameters.setUserId5("theUserLoginId");
       jsonParameters.setUserId5Name("User Fullname");
 
       Gson gson = new Gson();
@@ -253,10 +260,7 @@ public class AppLaunchSecurityTest {
 
    @Test
    public void appAuthnDocumentOpenLaunch() throws Exception {
-      LtiAuthenticationToken token = new LtiAuthenticationToken("userId",
-              "1234", "systemId",
-              AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, "authority"),
-              "unit_test");
+      OidcAuthenticationToken token = buildTokenForUnitTests("1234");
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
@@ -271,7 +275,7 @@ public class AppLaunchSecurityTest {
       qualtricsCourse.setOpen(true);
 
       QualtricsLaunch qualtricsLaunch = new QualtricsLaunch();
-      qualtricsLaunch.setUserId("userId");
+      qualtricsLaunch.setUserId("theUserLoginId");
       qualtricsLaunch.setUserFullName("User Fullname");
 
       Mockito.when(qualtricsService.getDocument(1L)).thenReturn(qualtricsDocument);
@@ -288,10 +292,7 @@ public class AppLaunchSecurityTest {
 
    @Test
    public void appAuthnDocumentNotFoundLaunch() throws Exception {
-      LtiAuthenticationToken token = new LtiAuthenticationToken("userId",
-              "1234", "systemId",
-              AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, "authority"),
-              "unit_test");
+      OidcAuthenticationToken token = buildTokenForUnitTests("1234");
 
       SecurityContextHolder.getContext().setAuthentication(token);
 
@@ -314,10 +315,8 @@ public class AppLaunchSecurityTest {
 
    @Test
    public void randomUrlWithAuth() throws Exception {
-      LtiAuthenticationToken token = new LtiAuthenticationToken("userId",
-            "1234", "systemId",
-            AuthorityUtils.createAuthorityList(LtiAuthenticationProvider.LTI_USER_ROLE, "authority"),
-            "unit_test");
+      OidcAuthenticationToken token = buildTokenForUnitTests("1234");
+
       SecurityContextHolder.getContext().setAuthentication(token);
 
       //This is a secured endpoint and should not allow access without authn
@@ -325,5 +324,25 @@ public class AppLaunchSecurityTest {
             .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
+   }
+
+   private OidcAuthenticationToken buildTokenForUnitTests(String courseId) {
+
+      Map<String, Object> extraAttributes = new HashMap<>();
+      JSONObject customMap = new JSONObject();
+      customMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, courseId);
+      customMap.put(LTIConstants.CUSTOM_CANVAS_USER_LOGIN_ID_KEY, "theUserLoginId");
+
+      extraAttributes.put(LTIConstants.CLAIMS_FULL_NAME_KEY, "User Fullname");
+
+      Map<String, Object> contextClaimsMap = new JSONObject();
+      contextClaimsMap.put(LTIConstants.CLAIMS_CONTEXT_TITLE_KEY, "Test course name");
+
+      extraAttributes.put(Claims.CONTEXT, contextClaimsMap);
+
+      OidcAuthenticationToken token = TestUtils.buildToken("theUserLoginId", LTIConstants.BASE_USER_AUTHORITY,
+              extraAttributes, customMap);
+
+      return token;
    }
 }
