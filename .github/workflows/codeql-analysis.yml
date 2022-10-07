@@ -28,6 +28,10 @@ jobs:
       actions: read
       contents: read
       security-events: write
+    with:
+      java-version: '17'
+      distribution: 'temurin'
+      cache: maven
 
     strategy:
       fail-fast: false
@@ -68,7 +72,3 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
