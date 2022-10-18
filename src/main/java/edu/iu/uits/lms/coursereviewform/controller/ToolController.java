@@ -76,7 +76,7 @@ public class ToolController extends OidcTokenAwareController {
    private static final String DOCUMENT_ID_CLAIM_NAME = "document_id";
 
    @RequestMapping("/launch")
-   @Secured(LTIConstants.BASE_USER_ROLE)
+   @Secured(LTIConstants.BASE_USER_AUTHORITY)
    public ModelAndView launch(Model model, SecurityContextHolderAwareRequestWrapper request) {
       log.info("In launch");
       OidcAuthenticationToken token = getTokenWithoutContext();
