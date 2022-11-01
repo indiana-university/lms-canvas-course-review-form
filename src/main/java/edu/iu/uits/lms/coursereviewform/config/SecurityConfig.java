@@ -51,14 +51,16 @@ import static edu.iu.uits.lms.lti.LTIConstants.WELL_KNOWN_ALL;
 @Configuration
 public class SecurityConfig {
     @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 5)
+    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4)
     public static class RestSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
         @Override
         public void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers("/rest/db/**")
+            http.requestMatchers().antMatchers("/rest/submit/**", "/api/**", "/rest/db/**")
                     .and()
                     .authorizeRequests()
+                    .antMatchers("/rest/submit/**").permitAll()
+                    .antMatchers("/api/**").permitAll()
                     .antMatchers("/rest/db/**")
                     .access("hasAuthority('SCOPE_lms:rest') and hasAuthority('ROLE_LMS_REST_ADMINS')")
                     .and()
@@ -66,20 +68,9 @@ public class SecurityConfig {
                     .and()
                     .oauth2ResourceServer()
                     .jwt().jwtAuthenticationConverter(new CustomJwtAuthenticationConverter());
-        }
-    }
 
-    @Configuration
-    @Order(SecurityProperties.BASIC_AUTH_ORDER - 4)
-    public static class OpenEndpointConfig extends WebSecurityConfigurerAdapter {
-
-        @Override
-        public void configure(HttpSecurity http) throws Exception {
-            http.requestMatchers().antMatchers("/rest/submit/**", "/api/**")
-                    .and()
-                    .authorizeRequests()
-                    .antMatchers("/api/**").permitAll()
-                    .antMatchers("/rest/submit/**").permitAll();
+            // need this because /rest/submit is a POST
+            http.csrf().ignoringAntMatchers("/rest/submit/**");
         }
     }
 
