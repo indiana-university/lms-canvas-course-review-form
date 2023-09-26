@@ -5,7 +5,7 @@
     <artifactId>course-review-form</artifactId>
     <packaging>jar</packaging>
     <name>course-review-form</name>
-    <version>0.99.1-SNAPSHOT</version>
+    <version>5.0.4-SNAPSHOT</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
